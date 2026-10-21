@@ -20,6 +20,8 @@ import Menu, { type MenuItem } from './Menu';
 import MenuBar from './MenuBar';
 import Spotlight from './Spotlight';
 import Wallpaper, { cycleWallpaper } from './Wallpaper';
+import { usePhone } from './usePhone';
+import PhoneHome from '../phone/PhoneHome';
 
 const WINDOWS: Record<WinKind, ComponentType<{ win: Win }>> = {
   finder: Finder, about: About, site: AboutSite, services: Services, career: Career,
@@ -30,13 +32,14 @@ function Shell() {
   const d = useDesktop(), apps = useApps();
   const [ctx, setCtx] = useState<{ x: number; y: number } | null>(null);
   const firstUnlock = useRef(true);
+  const phone = usePhone();
 
   const unlock = () => {
     if (!d.locked) return;
     d.setLocked(false);
     if (firstUnlock.current && !d.wins.length) {
       firstUnlock.current = false;
-      setTimeout(() => { if (!isPhone()) apps.services('support'); apps.helpdesk(); }, 450);
+      if (!isPhone()) setTimeout(() => { apps.services('support'); apps.helpdesk(); }, 450);
     }
   };
 
@@ -62,16 +65,15 @@ function Shell() {
 
   return (
     <div onContextMenu={e => {
-      if ((e.target as HTMLElement).closest('.win,.dock,.menubar,.menu')) return;
+      if (phone || (e.target as HTMLElement).closest('.win,.dock,.menubar,.menu')) return;
       e.preventDefault(); setCtx({ x: e.clientX, y: e.clientY });
     }}>
       <Wallpaper />
-      <MenuBar />
-      <DesktopIcons />
+      {phone ? <PhoneHome /> : <><MenuBar /><DesktopIcons /></>}
       <div className="desk">
         {d.wins.map(w => { const W = WINDOWS[w.kind]; return <W key={w.id} win={w} />; })}
       </div>
-      <Dock />
+      {!phone && <Dock />}
       {d.spot && <Spotlight />}
       {ctx && <Menu items={ctxItems} x={ctx.x} y={ctx.y} onClose={() => setCtx(null)} />}
       {d.toastMsg && <div className="spot" style={{ top: 'auto', bottom: 110, width: 'auto', padding: '12px 20px', borderRadius: 999, fontWeight: 500 }}>{d.toastMsg}</div>}

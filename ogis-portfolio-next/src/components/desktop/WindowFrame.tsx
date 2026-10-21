@@ -1,7 +1,10 @@
 'use client';
 
 import { useEffect, useRef, useState, type CSSProperties, type PointerEvent as RPointerEvent, type ReactNode } from 'react';
+import { SVG } from '@/lib/icons';
 import { isPhone, useDesktop, type Win } from './DesktopContext';
+import { Svg } from './Icons';
+import { takeLaunchOrigin, usePhone } from './usePhone';
 
 type Rect = { left: number; top: number; width: number; height: number };
 let cascade = 0;
@@ -24,6 +27,10 @@ export default function WindowFrame({ win, w, h, toolbar, className = '', childr
   const [minStyle, setMinStyle] = useState<CSSProperties | null>(null);
   const saved = useRef<Rect | null>(null);
   const el = useRef<HTMLElement>(null);
+  const phone = usePhone();
+  const [origin, setOrigin] = useState(() => takeLaunchOrigin());
+  const [leaving, setLeaving] = useState(false);
+  const [dragY, setDragY] = useState(0);
 
   useEffect(() => {
     let r2 = 0;
@@ -31,8 +38,20 @@ export default function WindowFrame({ win, w, h, toolbar, className = '', childr
     return () => { cancelAnimationFrame(r1); cancelAnimationFrame(r2); };
   }, []);
 
+  // On phones, grow out of the tapped icon again whenever the app comes back to the front.
+  useEffect(() => {
+    if (!phone || win.min) return;
+    const o = takeLaunchOrigin();
+    if (o) setOrigin(o);
+    setOpening(true);
+    let r2 = 0;
+    const r1 = requestAnimationFrame(() => { r2 = requestAnimationFrame(() => setOpening(false)); });
+    return () => { cancelAnimationFrame(r1); cancelAnimationFrame(r2); };
+  }, [phone, win.min, win.nonce]);
+
   // Fly to the Dock when minimized; come back when restored.
   useEffect(() => {
+    if (phone) return;
     if (!win.min) { setMinStyle(null); return; }
     const target = document.querySelector(`.dock-item[data-app="${win.app}"]`)?.getBoundingClientRect();
     const r = el.current!.getBoundingClientRect();
@@ -41,7 +60,7 @@ export default function WindowFrame({ win, w, h, toolbar, className = '', childr
     setMinStyle({ transform: `translate(${dx}px, ${dy}px) scale(.08)`, opacity: 0 });
     const t = setTimeout(() => setMinStyle(s => s && { ...s, visibility: 'hidden' }), 300);
     return () => clearTimeout(t);
-  }, [win.min, win.app]);
+  }, [win.min, win.app, phone]);
 
   const doClose = () => { setClosing(true); setTimeout(() => close(win.id), 200); };
   const doZoom = () => {
@@ -70,6 +89,35 @@ export default function WindowFrame({ win, w, h, toolbar, className = '', childr
     const up = () => { h.removeEventListener('pointermove', move); h.removeEventListener('pointerup', up); };
     h.addEventListener('pointermove', move); h.addEventListener('pointerup', up);
   };
+
+  if (phone) {
+    // iPhone layout: a full-screen app with a Home button and a home indicator to swipe up on.
+    const goHome = () => { setLeaving(true); setDragY(0); setTimeout(() => { setLeaving(false); setMin(win.id, true); }, 260); };
+    const swipe = (e: RPointerEvent<HTMLButtonElement>) => {
+      const bar = e.currentTarget, sy = e.clientY;
+      bar.setPointerCapture(e.pointerId);
+      let dy = 0;
+      const move = (ev: PointerEvent) => { dy = Math.min(0, ev.clientY - sy); setDragY(dy); };
+      const up = () => {
+        bar.removeEventListener('pointermove', move); bar.removeEventListener('pointerup', up);
+        if (dy < -50 || Math.abs(dy) < 4) goHome(); else setDragY(0);
+      };
+      bar.addEventListener('pointermove', move); bar.addEventListener('pointerup', up);
+    };
+    const pcls = ['ios-app', className, (opening || leaving) && 'shrunk'].filter(Boolean).join(' ');
+    const lift = dragY ? { transform: `translateY(${dragY}px) scale(${Math.max(.8, 1 + dragY / 900)})`, borderRadius: 32, transition: 'none' } : {};
+    return (
+      <section ref={el} className={pcls} aria-label={win.title} hidden={win.min}
+        style={{ zIndex: win.z, transformOrigin: origin ? `${origin.x}px ${origin.y}px` : '50% 100%', ...lift }}>
+        <header className="ios-nav">
+          <button className="ios-back" onClick={goHome} aria-label="Back to Home"><Svg html={SVG.back} />Home</button>
+          {toolbar ? <div className="tb">{toolbar}</div> : <div className="ios-title">{win.title}</div>}
+        </header>
+        <div className="ios-body">{children}</div>
+        <button className="ios-home-ind" aria-label="Swipe up to go Home" onPointerDown={swipe} />
+      </section>
+    );
+  }
 
   const cls = ['win', className, opening && 'opening', closing && 'closing', anim && 'anim', activeId !== win.id && 'inactive'].filter(Boolean).join(' ');
   return (

@@ -3,9 +3,11 @@
 import { useEffect, useRef } from 'react';
 import { OWNER } from '@/data/portfolio';
 import { useClock } from './useClock';
+import { usePhone } from './usePhone';
 
 export default function LockScreen({ locked, onUnlock }: { locked: boolean; onUnlock: () => void }) {
   const now = useClock();
+  const phone = usePhone();
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => { if (locked) setTimeout(() => ref.current?.focus(), 50); }, [locked]);
   return (
@@ -15,7 +17,7 @@ export default function LockScreen({ locked, onUnlock }: { locked: boolean; onUn
       <div className="who">
         <div className="avatar">{OWNER.initials}</div>
         <div className="name">{OWNER.name} · {OWNER.studio}</div>
-        <div className="hint">Tech support · Development · NGO software · Click to enter</div>
+        <div className="hint">{phone ? 'Tap to open' : 'Tech support · Development · NGO software · Click to enter'}</div>
       </div>
     </div>
   );
