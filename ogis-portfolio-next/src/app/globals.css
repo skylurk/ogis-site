@@ -438,3 +438,10 @@ body.locked .dock-wrap { opacity: 0; transform: translateY(30px); }
 .desk { position: fixed; inset: 0; z-index: 2; pointer-events: none; }
 .win { pointer-events: auto; }
 .svgwrap { display: contents; }
+
+/* Terminal: thefuck-style correction prompt */
+.term .g { color: #7ee2a8; }
+.term .r { color: #ff7b72; }
+.term .fixline { white-space: pre; }
+.term .fixline b { color: #ffffff; font-weight: 600; }
+.term .hint { font-size: 11.5px; }
