@@ -1,12 +1,11 @@
 'use client';
 
-import { useCallback, useRef, useState, type MouseEvent, type PointerEvent, type ReactNode } from 'react';
+import { useCallback, useState, type MouseEvent, type ReactNode } from 'react';
 import { OWNER, PROJECTS, SERVICES, WORK } from '@/data/portfolio';
 import { SVG } from '@/lib/icons';
 import { type AppKey, useApps, useDesktop } from '../desktop/DesktopContext';
 import { AppIcon, OrgDot, ProjIcon, Svg } from '../desktop/Icons';
 import { setLaunchOrigin } from '../desktop/usePhone';
-import { useClock } from '../desktop/useClock';
 import ControlCenter from './ControlCenter';
 
 type Tile = { label: string; icon: ReactNode; run: () => void; app?: AppKey };
@@ -21,14 +20,8 @@ export default function PhoneHome() {
   const apps = useApps();
   const { setSpot, wins } = useDesktop();
   const running = new Set(wins.map(w => w.app));
-  const now = useClock();
   const [cc, setCc] = useState(false);
   const closeCc = useCallback(() => setCc(false), []);
-  // Swipe down from the top of the screen opens Control Center, like on an iPhone.
-  const pull = useRef<number | null>(null);
-  const pullStart = (e: PointerEvent) => { if (e.clientY < 70) pull.current = e.clientY; };
-  const pullMove = (e: PointerEvent) => { if (pull.current != null && e.clientY - pull.current > 40) { pull.current = null; setCc(true); } };
-  const pullEnd = () => { pull.current = null; };
 
   const grid: Tile[] = [
     { label: 'Services', icon: <AppIcon k="services" />, run: () => apps.services() },
@@ -63,11 +56,7 @@ export default function PhoneHome() {
   const building = PROJECTS.find(p => p.status);
 
   return (
-    <div className="ios-home" onPointerDown={pullStart} onPointerMove={pullMove} onPointerUp={pullEnd}>
-      <button className="ios-status" onClick={() => setCc(true)} aria-label="Open Control Center: Wi-Fi and battery">
-        <span>{now?.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }).replace(/\s?[AP]M/i, '')}</span>
-        <span className="ios-status-r"><Svg html={SVG.wifi} /><Svg html={SVG.battery} /></span>
-      </button>
+    <div className="ios-home">
       <ControlCenter open={cc} onClose={closeCc} />
       <section className="ios-widget" aria-label="Status">
         <div className="w-top">
@@ -84,7 +73,12 @@ export default function PhoneHome() {
       </section>
       <div className="ios-grid">{grid.map(t => tile(t))}</div>
       <div className="ios-spacer" />
-      <button className="ios-search" onClick={() => setSpot(true)}><Svg html={SVG.search} />Search</button>
+      <div className="ios-search-row">
+        <button className="ios-search" onClick={() => setSpot(true)}><Svg html={SVG.search} />Search</button>
+        <button className="ios-cc-btn" onClick={() => setCc(true)} aria-label="Open Control Center: Wi-Fi, battery and settings" aria-expanded={cc}>
+          <Svg html={SVG.up} />
+        </button>
+      </div>
       <a className="ios-simple" href="/simple">Simple view</a>
       <nav className="ios-dock" aria-label="Dock">
         {dock.map(t => (

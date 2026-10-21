@@ -51,10 +51,10 @@ export default function ControlCenter({ open, onClose }: { open: boolean; onClos
   const toggleDark = () => { const v = !dark; setDark(v); applyTheme(v ? 'dark' : 'light'); };
   const toggleMotion = () => { const v = !motion; setMotion(v); applyReduceMotion(v); };
 
-  // Swipe the panel up to close, like iOS.
+  // Swipe the panel back down to close.
   const down = (e: PointerEvent) => { start.current = e.clientY; };
-  const move = (e: PointerEvent) => { if (start.current != null) setDragY(Math.min(0, e.clientY - start.current)); };
-  const up = () => { if (dragY < -70) onClose(); setDragY(0); start.current = null; };
+  const move = (e: PointerEvent) => { if (start.current != null) setDragY(Math.max(0, e.clientY - start.current)); };
+  const up = () => { if (dragY > 70) onClose(); setDragY(0); start.current = null; };
   const building = PROJECTS.find(p => p.status);
 
   return (
@@ -63,6 +63,7 @@ export default function ControlCenter({ open, onClose }: { open: boolean; onClos
         onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={up}
         style={dragY ? { transform: `translateY(${dragY}px)`, transition: 'none' } : undefined}>
 
+        <button className="cc-handle" aria-label="Close Control Center" onClick={onClose} />
         <div className="cc-grid">
           <div className="cc-tile cc-wide cc-conn">
             <button className="cc-row" onClick={() => setShowNets(s => !s)} aria-expanded={showNets}>
@@ -113,7 +114,6 @@ export default function ControlCenter({ open, onClose }: { open: boolean; onClos
 
           <button className="cc-tile cc-full cc-low" onClick={() => go(() => apps.calendar('A quick call'))}>{BATTERY.cta} ›</button>
         </div>
-        <button className="cc-handle" aria-label="Close Control Center" onClick={onClose} />
       </div>
     </div>
   );
