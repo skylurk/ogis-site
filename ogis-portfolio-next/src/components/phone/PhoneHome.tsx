@@ -1,11 +1,13 @@
 'use client';
 
-import type { MouseEvent, ReactNode } from 'react';
+import { useCallback, useRef, useState, type MouseEvent, type PointerEvent, type ReactNode } from 'react';
 import { OWNER, PROJECTS, SERVICES, WORK } from '@/data/portfolio';
 import { SVG } from '@/lib/icons';
 import { type AppKey, useApps, useDesktop } from '../desktop/DesktopContext';
 import { AppIcon, OrgDot, ProjIcon, Svg } from '../desktop/Icons';
 import { setLaunchOrigin } from '../desktop/usePhone';
+import { useClock } from '../desktop/useClock';
+import ControlCenter from './ControlCenter';
 
 type Tile = { label: string; icon: ReactNode; run: () => void; app?: AppKey };
 
@@ -19,6 +21,14 @@ export default function PhoneHome() {
   const apps = useApps();
   const { setSpot, wins } = useDesktop();
   const running = new Set(wins.map(w => w.app));
+  const now = useClock();
+  const [cc, setCc] = useState(false);
+  const closeCc = useCallback(() => setCc(false), []);
+  // Swipe down from the top of the screen opens Control Center, like on an iPhone.
+  const pull = useRef<number | null>(null);
+  const pullStart = (e: PointerEvent) => { if (e.clientY < 70) pull.current = e.clientY; };
+  const pullMove = (e: PointerEvent) => { if (pull.current != null && e.clientY - pull.current > 40) { pull.current = null; setCc(true); } };
+  const pullEnd = () => { pull.current = null; };
 
   const grid: Tile[] = [
     { label: 'Services', icon: <AppIcon k="services" />, run: () => apps.services() },
@@ -50,10 +60,15 @@ export default function PhoneHome() {
       {showLabel && <span className="ios-label">{t.label}</span>}
     </button>
   );
-  const now = PROJECTS.find(p => p.status);
+  const building = PROJECTS.find(p => p.status);
 
   return (
-    <div className="ios-home">
+    <div className="ios-home" onPointerDown={pullStart} onPointerMove={pullMove} onPointerUp={pullEnd}>
+      <button className="ios-status" onClick={() => setCc(true)} aria-label="Open Control Center: Wi-Fi and battery">
+        <span>{now?.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }).replace(/\s?[AP]M/i, '')}</span>
+        <span className="ios-status-r"><Svg html={SVG.wifi} /><Svg html={SVG.battery} /></span>
+      </button>
+      <ControlCenter open={cc} onClose={closeCc} />
       <section className="ios-widget" aria-label="Status">
         <div className="w-top">
           <span className="avatar">{OWNER.initials}</span>
@@ -61,7 +76,7 @@ export default function PhoneHome() {
         </div>
         <div className="w-status"><i className="dot" />Available for new work</div>
         <div className="w-sub">{SERVICES.map(s => s.name.replace(' Services', '')).join(' · ')}</div>
-        {now && <div className="w-sub">Now building: {now.name}</div>}
+        {building && <div className="w-sub">Now building: {building.name}</div>}
         <div className="w-actions">
           <button onClick={launch(dock[0])}>Get help</button>
           <button onClick={launch(grid[3])}>Book a call</button>

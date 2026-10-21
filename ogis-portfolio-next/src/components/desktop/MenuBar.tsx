@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { PROJECTS, SERVICES } from '@/data/portfolio';
+import { BATTERY, NETWORKS, WIFI_HELP } from '@/data/status';
 import { SVG } from '@/lib/icons';
 import { APP_NAMES, useApps, useDesktop } from './DesktopContext';
 import { Svg } from './Icons';
@@ -31,14 +32,12 @@ export default function MenuBar() {
       case 'logo': return [['About This Site', '', apps.site], ['System Settings…', '', () => apps.settings()], '-',
         ['Change Wallpaper…', '', () => apps.settings('wallpaper')], ['Spotlight Search', '⌘K', () => d.setSpot(true)], ['Simple View', '', () => { window.location.href = '/simple'; }], '-',
         ['Lock Screen', '⌃⌘Q', () => d.setLocked(true)]];
-      case 'battery': return [['Coffee: 100%', '', null], ['Power Source: Kenyan AA beans', '', null], ['Running since 2018, no shutdowns', '', null], '-',
-        ['Low on energy? Book a call', '', () => apps.calendar('A quick call')]];
+      case 'battery': return [[BATTERY.title, '', null], ...BATTERY.lines.map(l => [l, '', null] as MenuItem), '-',
+        [BATTERY.cta, '', () => apps.calendar('A quick call')]];
       case 'wifi': return [['Wi-Fi', '', null],
-        ['✓  OgisCreatives-5G', '', () => d.toast('Connected. Strong signal, low latency, good vibes.')],
-        ['NRG-Radio-Guest', '', () => d.toast('That one’s for the radio studio. David set it up, though.')],
-        ['Your-Office-WiFi  (weak)', '', () => apps.helpdesk('wifi')],
-        ['FBI_Surveillance_Van_3', '', () => d.toast('Nice try.')], '-',
-        ['Wi-Fi keeps dropping? Ask the Help Desk', '', () => apps.helpdesk('wifi')], ['Network Settings…', '', null]];
+        ...NETWORKS.map(n => [`${n.connected ? '✓  ' : ''}${n.name}${n.strength === 1 ? '  (weak)' : ''}`, '',
+          () => ('help' in n.action ? apps.helpdesk(n.action.help) : d.toast(n.action.toast))] as MenuItem), '-',
+        [WIFI_HELP, '', () => apps.helpdesk('wifi')], ['Network Settings…', '', null]];
       case 'app': return [[`About ${appName}`, '', apps.site], '-', ['Hide Others', '⌥⌘H', null],
         [`Quit ${appName}`, '⌘Q', active ? () => d.wins.filter(w => w.app === active.app).forEach(w => d.close(w.id)) : null]];
       case 'projects': return [...PROJECTS.map(p => [p.name, '', () => apps.project(p)] as MenuItem), '-', ['All Projects', '', () => apps.finder('Projects')]];
