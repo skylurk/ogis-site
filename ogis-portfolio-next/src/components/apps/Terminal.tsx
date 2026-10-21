@@ -3,13 +3,19 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { CLIENTS, FOLDERS, type FolderName, type Item, OWNER, PROJECTS, SERVICES, SKILLS, WORK } from '@/data/portfolio';
 import { closest, COMMON_SLIPS, q, tokenize } from '@/lib/fixer';
+import { NOT_FOUND_QUIPS, WITTY } from '@/lib/witty';
 import { APP_NAMES, useApps, useDesktop, type Win } from '../desktop/DesktopContext';
 import WindowFrame from '../desktop/WindowFrame';
 import { useSearch } from '../desktop/Spotlight';
 
 type Line = { key: number; node: ReactNode; cls?: string };
 type Dir = '~' | FolderName;
-type Out = { say: (node: ReactNode, cls?: string) => void; fail: (msg: ReactNode, fixes?: string[]) => false };
+type Out = {
+  say: (node: ReactNode, cls?: string) => void;
+  fail: (msg: ReactNode, fixes?: string[]) => false;
+  /** A reply that isn't an error but has somewhere useful to go next, offered through `fuck`. */
+  offer: (msg: ReactNode, fixes: string[]) => true;
+};
 
 const D = ({ children }: { children: ReactNode }) => <span className="d">{children}</span>;
 const M = ({ children }: { children: ReactNode }) => <span className="m">{children}</span>;
@@ -52,6 +58,7 @@ export default function Terminal({ win }: { win: Win }) {
   const cwdRef = useRef<Dir>('~');
   const hist = useRef<string[]>([]), hi = useRef(0), seq = useRef(2);
   const lastFail = useRef<{ raw: string; fixes: string[] } | null>(null);
+  const quip = useRef(0);
   const box = useRef<HTMLDivElement>(null), field = useRef<HTMLInputElement>(null);
   useEffect(() => { setTimeout(() => field.current?.focus(), 50); }, []);
   useEffect(() => { box.current?.scrollTo(0, box.current.scrollHeight); }, [lines, pending]);
@@ -258,26 +265,41 @@ export default function Terminal({ win }: { win: Win }) {
 
   /** Runs one command. Returns false if it failed, so `a && b` can stop early. */
   function exec(raw: string, o: Out): boolean {
+    const norm = raw.toLowerCase().replace(/\s+/g, ' ').replace(/[.!?,]+$/, '').trim();
+    for (const w of WITTY) {
+      const m = norm.match(w.match);
+      if (!m) continue;
+      const text = typeof w.reply === 'function' ? w.reply(m) : w.reply;
+      if (w.fixes?.length) return o.offer(text, w.fixes);
+      o.say(text); return true;
+    }
     for (const [re, rep] of COMMON_SLIPS) if (re.test(raw)) return o.fail(`zsh: command not found: ${raw.split(/\s/)[0]}`, [raw.replace(re, rep)]);
     const [cmd, ...args] = tokenize(raw);
     if (!cmd) return true;
     const h = CMDS[cmd.toLowerCase()];
     if (!h) {
       const fixes = closest(cmd, Object.keys(CMDS).filter(k => k.length > 1)).map(c => [c, ...args.map(q)].join(' '));
-      return o.fail(`zsh: command not found: ${cmd}`, fixes);
+      if (fixes.length) return o.fail(`zsh: command not found: ${cmd}`, fixes);
+      const line = NOT_FOUND_QUIPS[quip.current++ % NOT_FOUND_QUIPS.length].replace('{cmd}', cmd);
+      return o.fail(<>{`zsh: command not found: ${cmd}`}{'\n'}<M>{line}</M></>, ['help']);
     }
     return h(args, o) !== false;
   }
 
   function run(raw: string) {
     const out: Line[] = [];
-    let failed: { raw: string; fixes: string[] } | null = null;
+    let failed: { raw: string; fixes: string[]; offer?: boolean } | null = null;
     const o: Out = {
       say: (node, cls) => { out.push({ key: seq.current++, node, cls }); },
       fail: (msg, fixes = []) => {
         out.push({ key: seq.current++, node: msg });
         if (!failed) failed = { raw, fixes };
         return false;
+      },
+      offer: (msg, fixes) => {
+        out.push({ key: seq.current++, node: msg });
+        if (!failed) failed = { raw, fixes, offer: true };
+        return true;
       }
     };
     out.push({ key: seq.current++, node: <><span className="p">{prompt(cwdRef.current)}</span> {raw}</> });
@@ -299,7 +321,9 @@ export default function Terminal({ win }: { win: Win }) {
       if (!exec(part, o)) break;
     }
     lastFail.current = failed;
-    if (failed && (failed as { fixes: string[] }).fixes.length) out.push({ key: seq.current++, node: <>Mistyped? Type <D>fuck</D> to fix it.</>, cls: 'm hint' });
+    const f = failed as { fixes: string[]; offer?: boolean } | null;
+    if (f?.fixes.length) out.push({ key: seq.current++, cls: 'm hint',
+      node: f.offer || f.fixes[0] === 'help' ? <>Type <D>fuck</D> for: {f.fixes[0]}</> : <>Mistyped? Type <D>fuck</D> to fix it.</> });
     setLines(l => clear ? [] : [...l, ...out]);
   }
 
