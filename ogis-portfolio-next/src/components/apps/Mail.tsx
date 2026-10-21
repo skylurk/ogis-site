@@ -8,9 +8,12 @@ import WindowFrame from '../desktop/WindowFrame';
 export default function Mail({ win }: { win: Win }) {
   const { toast } = useDesktop();
   const [subject, setSubject] = useState(win.props.subject ?? 'Project enquiry');
-  const [body, setBody] = useState(`Hi ${OWNER.name},\n\n`);
+  const [body, setBody] = useState(win.props.body ?? `Hi ${OWNER.name},\n\n`);
   const [copied, setCopied] = useState(false);
-  useEffect(() => { if (win.props.subject) setSubject(win.props.subject); }, [win.nonce, win.props.subject]);
+  useEffect(() => {
+    if (win.props.subject) setSubject(win.props.subject);
+    if (win.props.body) setBody(win.props.body);
+  }, [win.nonce, win.props.subject, win.props.body]);
   const href = `mailto:${OWNER.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   const copy = () => navigator.clipboard?.writeText(OWNER.email).then(() => setCopied(true), () => toast('Select the address to copy it.'));
   const small = { height: 24, padding: '0 10px', fontSize: 12 };

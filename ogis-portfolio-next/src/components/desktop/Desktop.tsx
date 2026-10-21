@@ -5,8 +5,10 @@ import About from '../apps/About';
 import AboutSite from '../apps/AboutSite';
 import Career from '../apps/Career';
 import Finder from '../apps/Finder';
+import HelpDesk from '../apps/HelpDesk';
 import Mail from '../apps/Mail';
 import ProjectWindow from '../apps/ProjectWindow';
+import QuoteCalculator from '../apps/QuoteCalculator';
 import Resume from '../apps/Resume';
 import Services from '../apps/Services';
 import Terminal from '../apps/Terminal';
@@ -21,7 +23,7 @@ import Wallpaper, { cycleWallpaper } from './Wallpaper';
 
 const WINDOWS: Record<WinKind, ComponentType<{ win: Win }>> = {
   finder: Finder, about: About, site: AboutSite, services: Services, career: Career,
-  project: ProjectWindow, resume: Resume, mail: Mail, terminal: Terminal
+  project: ProjectWindow, resume: Resume, mail: Mail, terminal: Terminal, helpdesk: HelpDesk, quote: QuoteCalculator
 };
 
 function Shell() {
@@ -34,7 +36,7 @@ function Shell() {
     d.setLocked(false);
     if (firstUnlock.current && !d.wins.length) {
       firstUnlock.current = false;
-      setTimeout(() => { if (!isPhone()) { apps.services('support'); apps.about(); } }, 450);
+      setTimeout(() => { if (!isPhone()) apps.services('support'); apps.helpdesk(); }, 450);
     }
   };
 

@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo, useState, type ReactNode } from 'react';
+import { matchIntents } from '@/data/helpdesk';
 import { PROJECTS, SERVICES, WORK, type FolderName } from '@/data/portfolio';
 import { SVG } from '@/lib/icons';
 import { APP_NAMES, type AppKey, useApps, useDesktop } from './DesktopContext';
@@ -12,7 +13,7 @@ type Result = { label: string; sub: string; icon: ReactNode; run: () => void };
 export function useSearch() {
   const apps = useApps();
   const all = useMemo<Result[]>(() => {
-    const launchable: Exclude<AppKey, 'preview' | 'trash'>[] = ['finder', 'about', 'services', 'career', 'mail', 'terminal', 'site'];
+    const launchable: Exclude<AppKey, 'preview' | 'trash'>[] = ['finder', 'about', 'helpdesk', 'services', 'career', 'quote', 'mail', 'terminal', 'site'];
     const folders: FolderName[] = ['Services', 'Projects', 'Career', 'NGO Work'];
     return [
       ...launchable.map(k => ({ label: APP_NAMES[k], sub: 'Application', icon: <AppIcon k={k} />, run: apps.launch[k] })),
@@ -23,11 +24,19 @@ export function useSearch() {
       { label: 'David Résumé.pdf', sub: 'Document', icon: <Svg html={SVG.pdf} />, run: apps.resume }
     ];
   }, [apps]);
-  return (q: string) => {
-    q = q.trim().toLowerCase();
+  return (raw: string) => {
+    const q = raw.trim().toLowerCase();
     if (!q) return [];
-    return all.filter(r => r.label.toLowerCase().includes(q) || r.sub.toLowerCase().includes(q))
-      .sort((a, b) => a.label.toLowerCase().indexOf(q) - b.label.toLowerCase().indexOf(q)).slice(0, 8);
+    // Everyday phrases first ("my laptop is slow"), then exact names.
+    const intents: Result[] = matchIntents(q).slice(0, 3).map(i => ({ label: i.label, sub: `Help Desk · ${i.sub}`, icon: <AppIcon k="helpdesk" />, run: () => apps.helpdesk(i.node) }));
+    const named = all.filter(r => r.label.toLowerCase().includes(q) || r.sub.toLowerCase().includes(q))
+      .sort((a, b) => a.label.toLowerCase().indexOf(q) - b.label.toLowerCase().indexOf(q));
+    const results = [...intents, ...named].slice(0, 8);
+    // A sentence, or nothing found: offer to ask the Help Desk in the visitor's own words.
+    if (!results.length || (q.includes(' ') && !named.length)) {
+      results.push({ label: `Ask the Help Desk: “${raw.trim()}”`, sub: 'Help Desk', icon: <AppIcon k="helpdesk" />, run: () => apps.helpdesk(undefined, raw.trim()) });
+    }
+    return results;
   };
 }
 
@@ -42,7 +51,7 @@ export default function Spotlight() {
     <div className="spot">
       <div className="bar">
         <Svg html={SVG.search} />
-        <input autoFocus placeholder="Search services, projects, places…" aria-label="Spotlight Search" autoComplete="off" value={q}
+        <input autoFocus placeholder="Try “my laptop is slow” or “Ingia”" aria-label="Spotlight Search" autoComplete="off" value={q}
           onChange={e => { setQ(e.target.value); setSel(0); }}
           onKeyDown={e => {
             if (e.key === 'ArrowDown') { setSel(s => Math.min(res.length - 1, s + 1)); e.preventDefault(); }

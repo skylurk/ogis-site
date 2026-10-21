@@ -106,7 +106,7 @@ export type Item =
   | { type: 'work'; name: string; ref: Work }
   | { type: 'pdf'; name: string }
   | { type: 'file'; name: string }
-  | { type: 'app'; name: string; icon: 'about' | 'mail' | 'site' };
+  | { type: 'app'; name: string; icon: 'about' | 'mail' | 'site' | 'helpdesk' | 'quote' };
 
 export const FOLDERS: Record<FolderName, Item[]> = {
   Services: SERVICES.map(s => ({ type: 'service', name: s.name, ref: s })),
@@ -123,6 +123,7 @@ export const FOLDER_NOTES: Record<FolderName, string> = {
   Trash: ''
 };
 export const DESKTOP_ITEMS: Item[] = [
+  { type: 'app', icon: 'helpdesk', name: 'Help Desk' }, { type: 'app', icon: 'quote', name: 'Quote Calculator' },
   { type: 'folder', name: 'Services' }, { type: 'folder', name: 'Projects' }, { type: 'folder', name: 'Career' }, { type: 'folder', name: 'NGO Work' },
   { type: 'pdf', name: 'David Résumé.pdf' }, { type: 'app', icon: 'about', name: 'About David' }, { type: 'app', icon: 'mail', name: 'Contact' },
   { type: 'app', icon: 'site', name: 'About This Site' }

@@ -35,6 +35,8 @@ const G = {
   terminal: '<svg viewBox="0 0 64 64"><path d="M15 22l11 9-11 9" stroke="#e8ecf2" stroke-width="4.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M31 43h17" stroke="#e8ecf2" stroke-width="4.2" stroke-linecap="round"/></svg>',
   mail: '<svg viewBox="0 0 64 64"><rect x="8" y="16" width="48" height="33" rx="5" fill="#fff"/><path d="M10 19l22 17 22-17" stroke="#3b8af5" stroke-width="3" fill="none" stroke-linejoin="round"/></svg>',
   trash: '<svg viewBox="0 0 64 64"><path d="M14 16h36l-3.5 38a3 3 0 0 1-3 2.7H20.5a3 3 0 0 1-3-2.7z" fill="rgba(255,255,255,.55)" stroke="#8c96a8" stroke-width="2"/><ellipse cx="32" cy="16" rx="19" ry="3.6" fill="#dfe5ee" stroke="#8c96a8" stroke-width="2"/><path d="M24 24l2 26M32 24v26M40 24l-2 26" stroke="#9ea8b8" stroke-width="1.6" stroke-linecap="round"/></svg>',
+  helpdesk: '<svg viewBox="0 0 64 64"><path d="M14 14h28a8 8 0 0 1 8 8v12a8 8 0 0 1-8 8H28l-9 7v-7h-5a8 8 0 0 1-8-8V22a8 8 0 0 1 8-8z" fill="#fff"/><path d="M52 26h2a6 6 0 0 1 6 6v9a6 6 0 0 1-6 6h-2v5l-7-5h-7" fill="none" stroke="#fff" stroke-width="3" stroke-linejoin="round" opacity=".7"/><circle cx="20" cy="28" r="2.6" fill="#1fa463"/><circle cx="28" cy="28" r="2.6" fill="#1fa463"/><circle cx="36" cy="28" r="2.6" fill="#1fa463"/></svg>',
+  quote: '<svg viewBox="0 0 64 64"><rect x="14" y="10" width="36" height="12" rx="3" fill="#e9eaee"/>' + [0, 1, 2].map(r => [0, 1, 2].map(c => `<circle cx="${20 + c * 12}" cy="${32 + r * 10}" r="4.2" fill="${c === 2 ? '#ff9f0a' : '#6b6e76'}"/>`).join('')).join('') + '</svg>',
   site: '<svg viewBox="0 0 24 24" style="color:#fff">' + SVG.logo.slice(SVG.logo.indexOf('>') + 1)
 };
 export type GlyphKey = keyof typeof G;

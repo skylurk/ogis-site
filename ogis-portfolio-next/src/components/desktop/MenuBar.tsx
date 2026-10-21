@@ -32,10 +32,10 @@ export default function MenuBar() {
         [`Quit ${appName}`, '⌘Q', active ? () => d.wins.filter(w => w.app === active.app).forEach(w => d.close(w.id)) : null]];
       case 'projects': return [...PROJECTS.map(p => [p.name, '', () => apps.project(p)] as MenuItem), '-', ['All Projects', '', () => apps.finder('Projects')]];
       case 'services': return [...SERVICES.map(s => [s.name, '', () => apps.services(s.id)] as MenuItem), '-', ['Request a Service…', '', () => apps.mail('Service enquiry')]];
-      case 'go': return [['Services', '', () => apps.finder('Services')], ['Projects', '', () => apps.finder('Projects')], ['Career', '', () => apps.finder('Career')], ['NGO Work', '', () => apps.finder('NGO Work')], '-', ['Résumé', '', apps.resume], ['Terminal', '', apps.terminal]];
+      case 'go': return [['Services', '', () => apps.finder('Services')], ['Projects', '', () => apps.finder('Projects')], ['Career', '', () => apps.finder('Career')], ['NGO Work', '', () => apps.finder('NGO Work')], '-', ['Help Desk', '', () => apps.helpdesk()], ['Quote Calculator', '', apps.quote], ['Résumé', '', apps.resume], ['Terminal', '', apps.terminal]];
       case 'window': return [['Minimize', '⌘M', active ? () => d.setMin(active.id, true) : null], '-',
         ...(d.wins.length ? d.wins.map(w => [w.title, '', () => { d.setMin(w.id, false); d.focus(w.id); }] as MenuItem) : [['No Windows', '', null] as MenuItem])];
-      case 'help': return [['How This Site Works', '', apps.site], ['Terminal Commands', '', apps.terminal], ['Contact David', '', () => apps.mail()]];
+      case 'help': return [['Ask the Help Desk', '', () => apps.helpdesk()], ['Quote Calculator', '', apps.quote], '-', ['How This Site Works', '', apps.site], ['Terminal Commands', '', apps.terminal], ['Contact David', '', () => apps.mail()]];
     }
   };
   const show = (key: Key, el: HTMLElement) => { const r = el.getBoundingClientRect(); setOpen({ key, x: r.left, y: r.bottom + 4 }); };

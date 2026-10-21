@@ -3,15 +3,15 @@
 import { createContext, useCallback, useContext, useMemo, useReducer, type ReactNode } from 'react';
 import { FOLDERS, type FolderName, type Item, PROJECTS, type Project, type ServiceId } from '@/data/portfolio';
 
-export type AppKey = 'finder' | 'about' | 'services' | 'career' | 'mail' | 'terminal' | 'site' | 'preview' | 'trash';
-export type WinKind = 'finder' | 'about' | 'site' | 'services' | 'career' | 'project' | 'resume' | 'mail' | 'terminal';
+export type AppKey = 'finder' | 'about' | 'helpdesk' | 'services' | 'career' | 'quote' | 'mail' | 'terminal' | 'site' | 'preview' | 'trash';
+export type WinKind = 'finder' | 'about' | 'site' | 'services' | 'career' | 'project' | 'resume' | 'mail' | 'terminal' | 'helpdesk' | 'quote';
 
 export const APP_NAMES: Record<AppKey, string> = {
-  finder: 'Finder', about: 'About David', services: 'Services', career: 'Career', mail: 'Mail',
+  finder: 'Finder', about: 'About David', helpdesk: 'Help Desk', services: 'Services', career: 'Career', quote: 'Quote Calculator', mail: 'Mail',
   terminal: 'Terminal', site: 'About This Site', preview: 'Preview', trash: 'Trash'
 };
 
-export type WinProps = { folder?: FolderName; service?: ServiceId; index?: number; projectId?: string; subject?: string };
+export type WinProps = { folder?: FolderName; service?: ServiceId; index?: number; projectId?: string; subject?: string; body?: string; node?: string; ask?: string };
 export type Win = { id: string; app: AppKey; kind: WinKind; title: string; props: WinProps; z: number; min: boolean; nonce: number };
 type OpenSpec = Omit<Win, 'z' | 'min' | 'nonce'>;
 
@@ -97,11 +97,13 @@ export function useApps() {
       career: (index = 0) => open({ id: 'career', app: 'career', kind: 'career', title: 'Career', props: { index } }),
       project: (p: Project) => open({ id: 'proj:' + p.id, app: 'finder', kind: 'project', title: p.name, props: { projectId: p.id } }),
       resume: () => open({ id: 'resume', app: 'preview', kind: 'resume', title: 'David Résumé.pdf', props: {} }),
-      mail: (subject?: string) => open({ id: 'mail', app: 'mail', kind: 'mail', title: 'New Message', props: { subject } }),
+      mail: (subject?: string, body?: string) => open({ id: 'mail', app: 'mail', kind: 'mail', title: 'New Message', props: { subject, body } }),
+      helpdesk: (node?: string, ask?: string) => open({ id: 'helpdesk', app: 'helpdesk', kind: 'helpdesk', title: 'Help Desk', props: { node, ask } }),
+      quote: () => open({ id: 'quote', app: 'quote', kind: 'quote', title: 'Quote Calculator', props: {} }),
       terminal: () => open({ id: 'terminal', app: 'terminal', kind: 'terminal', title: 'guest — zsh — 80×24', props: {} })
     };
     const launch: Record<AppKey, () => void> = {
-      finder: () => a.finder(), about: a.about, services: () => a.services(), career: () => a.career(), mail: () => a.mail(),
+      finder: () => a.finder(), about: a.about, helpdesk: () => a.helpdesk(), services: () => a.services(), career: () => a.career(), quote: a.quote, mail: () => a.mail(),
       terminal: a.terminal, site: a.site, preview: a.resume, trash: () => a.finder('Trash')
     };
     const openItem = (it: Item) => {
@@ -111,7 +113,7 @@ export function useApps() {
         case 'service': return a.services(it.ref.id);
         case 'work': return a.career(WORK_INDEX(it.ref.org));
         case 'pdf': return a.resume();
-        case 'app': return it.icon === 'about' ? a.about() : it.icon === 'mail' ? a.mail() : a.site();
+        case 'app': return ({ about: a.about, mail: () => a.mail(), site: a.site, helpdesk: () => a.helpdesk(), quote: a.quote })[it.icon]();
         case 'file': return toast(`“${it.name}” is in the Trash. It is staying there.`);
       }
     };
