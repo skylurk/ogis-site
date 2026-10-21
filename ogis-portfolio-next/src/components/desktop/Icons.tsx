@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import { FolderName, Item, Project, Work } from '@/data/portfolio';
 import { folderSVG, GLYPH, GlyphKey, SVG, Tint } from '@/lib/icons';
 import { FULL_ICONS } from './AppIcons';
-import { JUNK_ICONS } from '@/lib/icons';
+import { JUNK_ICONS, lockedFolderSVG } from '@/lib/icons';
 
 export type IconKey = GlyphKey | 'calendar' | 'settings' | 'resume';
 
@@ -46,6 +46,7 @@ export function ItemIcon({ it }: { it: Item }): ReactNode {
     case 'pdf': return <Svg html={SVG.pdf} />;
     case 'file': return <Svg html={SVG.file} />;
     case 'junk': return <Svg html={JUNK_ICONS[it.ref.icon]} />;
+    case 'secret': return <Svg html={lockedFolderSVG()} />;
     case 'app': return <AppIcon k={it.icon} />;
   }
 }

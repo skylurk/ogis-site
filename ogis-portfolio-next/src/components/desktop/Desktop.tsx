@@ -7,6 +7,7 @@ import Career from '../apps/Career';
 import Calendar from '../apps/Calendar';
 import Finder from '../apps/Finder';
 import JunkWindow from '../apps/JunkWindow';
+import SecretWindow from '../apps/SecretWindow';
 import Settings from '../apps/Settings';
 import HelpDesk from '../apps/HelpDesk';
 import Mail from '../apps/Mail';
@@ -29,7 +30,7 @@ import PhoneHome from '../phone/PhoneHome';
 const WINDOWS: Record<WinKind, ComponentType<{ win: Win }>> = {
   finder: Finder, about: About, site: AboutSite, services: Services, career: Career,
   project: ProjectWindow, resume: Resume, mail: Mail, terminal: Terminal, helpdesk: HelpDesk, quote: QuoteCalculator,
-  calendar: Calendar, settings: Settings, junk: JunkWindow
+  calendar: Calendar, settings: Settings, junk: JunkWindow, secret: SecretWindow
 };
 
 function Shell() {

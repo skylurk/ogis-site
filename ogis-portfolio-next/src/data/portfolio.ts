@@ -108,6 +108,7 @@ export type Item =
   | { type: 'pdf'; name: string }
   | { type: 'file'; name: string }
   | { type: 'junk'; name: string; ref: Junk }
+  | { type: 'secret'; name: string }
   | { type: 'app'; name: string; icon: 'about' | 'mail' | 'site' | 'helpdesk' | 'quote' | 'calendar' | 'settings' };
 
 export const FOLDERS: Record<FolderName, Item[]> = {
@@ -128,5 +129,6 @@ export const DESKTOP_ITEMS: Item[] = [
   { type: 'app', icon: 'helpdesk', name: 'Help Desk' }, { type: 'app', icon: 'calendar', name: 'Book a Call' }, { type: 'app', icon: 'quote', name: 'Quote Calculator' },
   { type: 'folder', name: 'Services' }, { type: 'folder', name: 'Projects' }, { type: 'folder', name: 'Career' }, { type: 'folder', name: 'NGO Work' },
   { type: 'pdf', name: 'David Résumé.pdf' }, { type: 'app', icon: 'about', name: 'About David' }, { type: 'app', icon: 'mail', name: 'Contact' },
-  { type: 'app', icon: 'site', name: 'About This Site' }
+  { type: 'app', icon: 'site', name: 'About This Site' },
+  { type: 'secret', name: 'Homework' }
 ];

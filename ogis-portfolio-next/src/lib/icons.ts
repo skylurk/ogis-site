@@ -69,6 +69,11 @@ export const TINTS = {
 } as const;
 export type Tint = keyof typeof TINTS;
 
+/** A plain folder with a padlock badge, for the suspicious "Homework" folder. */
+export function lockedFolderSVG() {
+  return folderSVG('blue').replace('</svg>', '<g transform="translate(42 30)"><rect x="0" y="7" width="18" height="14" rx="3" fill="#2b2f36"/><path d="M4 7V5a5 5 0 0 1 10 0v2" fill="none" stroke="#2b2f36" stroke-width="2.6"/><circle cx="9" cy="14" r="2" fill="#f2c94c"/></g></svg>');
+}
+
 export function folderSVG(tint: Tint = 'blue', sym?: GlyphKey) {
   const [a, b, c, d] = TINTS[tint];
   const symbol = sym ? `<g transform="translate(23 22) scale(.28)" opacity=".5" style="mix-blend-mode:multiply">${G[sym].replace(/#fff/g, d).replace(/^<svg[^>]*>|<\/svg>$/g, '')}</g>` : '';

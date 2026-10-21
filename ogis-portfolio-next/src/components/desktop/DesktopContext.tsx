@@ -4,7 +4,7 @@ import { createContext, useCallback, useContext, useMemo, useReducer, type React
 import { FOLDERS, type FolderName, type Item, PROJECTS, type Project, type ServiceId } from '@/data/portfolio';
 
 export type AppKey = 'finder' | 'about' | 'helpdesk' | 'services' | 'career' | 'calendar' | 'quote' | 'mail' | 'terminal' | 'settings' | 'site' | 'preview' | 'trash';
-export type WinKind = 'finder' | 'about' | 'site' | 'services' | 'career' | 'project' | 'resume' | 'mail' | 'terminal' | 'helpdesk' | 'quote' | 'calendar' | 'settings' | 'junk';
+export type WinKind = 'finder' | 'about' | 'site' | 'services' | 'career' | 'project' | 'resume' | 'mail' | 'terminal' | 'helpdesk' | 'quote' | 'calendar' | 'settings' | 'junk' | 'secret';
 
 export const APP_NAMES: Record<AppKey, string> = {
   finder: 'Finder', about: 'About David', helpdesk: 'Help Desk', services: 'Services', career: 'Career', calendar: 'Calendar', quote: 'Quote Calculator', mail: 'Mail', settings: 'System Settings',
@@ -103,6 +103,7 @@ export function useApps() {
       calendar: (topic?: string) => open({ id: 'calendar', app: 'calendar', kind: 'calendar', title: 'Book a Call', props: { subject: topic } }),
       settings: (pane?: string) => open({ id: 'settings', app: 'settings', kind: 'settings', title: 'System Settings', props: { pane } }),
       junk: (name: string) => open({ id: 'junk', app: 'finder', kind: 'junk', title: name, props: { junk: name } }),
+      secret: () => open({ id: 'secret', app: 'finder', kind: 'secret', title: 'Homework', props: {} }),
       terminal: () => open({ id: 'terminal', app: 'terminal', kind: 'terminal', title: 'guest — zsh — 80×24', props: {} })
     };
     const launch: Record<AppKey, () => void> = {
@@ -118,6 +119,7 @@ export function useApps() {
         case 'pdf': return a.resume();
         case 'app': return ({ about: a.about, mail: () => a.mail(), site: a.site, helpdesk: () => a.helpdesk(), quote: a.quote, calendar: () => a.calendar(), settings: () => a.settings() })[it.icon]();
         case 'junk': return a.junk(it.name);
+        case 'secret': return a.secret();
         case 'file': return toast(`“${it.name}” is in the Trash. It is staying there.`);
       }
     };

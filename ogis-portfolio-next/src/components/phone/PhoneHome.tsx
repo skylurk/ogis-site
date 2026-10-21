@@ -2,7 +2,7 @@
 
 import { useCallback, useState, type MouseEvent, type ReactNode } from 'react';
 import { OWNER, PROJECTS, SERVICES, WORK } from '@/data/portfolio';
-import { SVG } from '@/lib/icons';
+import { lockedFolderSVG, SVG } from '@/lib/icons';
 import { type AppKey, useApps, useDesktop } from '../desktop/DesktopContext';
 import { AppIcon, OrgDot, ProjIcon, Svg } from '../desktop/Icons';
 import { setLaunchOrigin } from '../desktop/usePhone';
@@ -34,7 +34,8 @@ export default function PhoneHome() {
     { label: 'NGO Work', icon: <Folder items={[<AppIcon key="ngo" k="ngo" />, ...WORK.filter(w => w.ngo).map(w => <OrgDot key={w.org} w={w} />)]} />, run: () => apps.finder('NGO Work') },
     { label: 'Settings', icon: <AppIcon k="settings" />, run: () => apps.settings() },
     { label: 'Trash', icon: <AppIcon k="trash" />, run: () => apps.finder('Trash') },
-    { label: 'Site Info', icon: <AppIcon k="site" />, run: apps.site }
+    { label: 'Site Info', icon: <AppIcon k="site" />, run: apps.site },
+    { label: 'Homework', icon: <span className="ios-secret"><Svg html={lockedFolderSVG()} /></span>, run: apps.secret }
   ];
   const dock: Tile[] = [
     { label: 'Help Desk', icon: <AppIcon k="helpdesk" />, run: () => apps.helpdesk(), app: 'helpdesk' },

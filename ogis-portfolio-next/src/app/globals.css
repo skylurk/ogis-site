@@ -806,3 +806,26 @@ button.switch { border: 0; padding: 0; cursor: default; transition: background .
   background: var(--ios-glass); -webkit-backdrop-filter: blur(20px) saturate(1.8); backdrop-filter: blur(20px) saturate(1.8); box-shadow: inset 0 0 0 .5px rgba(255,255,255,.4); }
 .ios-cc-btn svg { width: 15px; height: 15px; }
 .ios-cc-btn:active { transform: translateY(-50%) scale(.9); }
+
+/* ---------- The "Homework" folder ---------- */
+.secret-lock { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; padding: 10px 30px 26px; }
+.secret-padlock { width: 64px; height: 64px; color: var(--text-2); }
+.secret-padlock svg { width: 100%; height: 100%; }
+.secret-padlock .shackle { transition: transform .4s cubic-bezier(.2,.85,.25,1); transform-origin: 44px 28px; }
+.secret-lock.cracking .secret-padlock { animation: shake .5s ease 2; color: #e5484d; }
+.secret-lock.cracking .shackle { transform: translateY(-5px) rotate(28deg); }
+@keyframes shake { 20%, 60% { transform: translateX(-6px); } 40%, 80% { transform: translateX(6px); } }
+.secret-lock h2 { margin: 4px 0 0; font: 700 17px/1.3 var(--font-display); }
+.secret-hint { margin: 0; color: var(--text-2); max-width: 34ch; min-height: 3em; }
+.secret-reveal { padding: 4px 28px 26px; -webkit-user-select: text; user-select: text; }
+.secret-busted { margin: 0; font: 800 34px/1 var(--font-display); letter-spacing: -.02em; }
+.secret-lede { margin: 10px 0 14px; font-size: 14.5px; line-height: 1.55; }
+.secret-reveal h3 { margin: 0 0 8px; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--text-3); }
+.secret-files { list-style: none; margin: 0; padding: 6px; border-radius: 14px; background: var(--group-bg); box-shadow: inset 0 0 0 .5px var(--win-line); }
+.secret-files li { display: flex; align-items: center; gap: 10px; padding: 5px 6px; font-size: 13px; }
+.secret-files li + li { border-top: .5px solid var(--win-line); }
+.secret-files svg { height: 28px !important; width: 24px; flex: none; }
+.secret-pitch { margin: 16px 0 6px; padding: 12px 14px; border-radius: 12px; background: var(--sel); font-weight: 600; line-height: 1.5; }
+.ios-secret { display: grid; place-items: center; width: 100%; height: 100%; }
+.ios-secret svg { width: 100%; height: auto; }
+.secret-lock { height: 100%; justify-content: center; padding-bottom: 60px; }

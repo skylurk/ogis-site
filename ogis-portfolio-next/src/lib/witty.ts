@@ -39,6 +39,11 @@ export const WITTY: Witty[] = [
   { match: /^(where are you|where is david|location)$/, reply: 'Kenya. Remote support reaches the rest of the world.', fixes: ['contact'] },
   { match: /^(is this real|are you real|are you (an )?ai|are you human)$/, reply: 'The terminal is fake. David is real, and so is his work.', fixes: ['projects'] },
 
+  // The "Homework" folder
+  { match: /^(cd|ls|cat|sudo cat|sudo cd|unzip)( -\w+)? ["']?(~\/)?homework\/?["']?$/, reply: 'Nice try. That folder is password protected, and the password is “hire David”. (Curious clicks are how break-ins start. David can help with that.)', fixes: ['open Homework', 'services'] },
+  { match: /^(sudo )?rm( -\w+)? ["']?homework\/?["']?$/, reply: 'Deleting the evidence? It’s backed up in three places, one of them off-site. David insists. Want backups like that?', fixes: ['services'] },
+  { match: /^(sudo )?(crack|hack|bruteforce|john|hashcat)( -\w+)? ["']?homework["']?$/, reply: 'Brute-forcing a portfolio? Bold. Point that energy at your own network: David runs security audits.', fixes: ['services'] },
+
   // Classic jokes
   { match: /^make me a (sandwich|coffee|tea)$/, reply: m => `What? Make your own ${m[1]}.`, fixes: ['sudo make me a sandwich'] },
   { match: /^sudo make me a (sandwich|coffee|tea)$/, reply: 'Okay.' },

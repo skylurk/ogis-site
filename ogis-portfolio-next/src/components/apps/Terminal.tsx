@@ -149,6 +149,7 @@ export default function Terminal({ win }: { win: Win }) {
     open: (args, o) => {
       const arg = args.join(' ');
       if (!arg) return o.fail('usage: open name', []);
+      if (/^["']?homework\/?["']?$/i.test(arg)) { apps.secret(); return o.say('Opening Homework… good luck with the password.', 'm'); }
       const f = findItem(arg);
       if (f?.item) { apps.openItem(f.item); return o.say(`Opened ${f.item.name}`, 'm'); }
       if (f?.file === 'David Résumé.pdf') { apps.resume(); return o.say('Opened David Résumé.pdf', 'm'); }
