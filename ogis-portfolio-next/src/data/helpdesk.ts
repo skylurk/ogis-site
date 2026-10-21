@@ -8,7 +8,8 @@ export type HelpAction =
   | { type: 'project'; id: string }
   | { type: 'career'; org: string }
   | { type: 'quote' }
-  | { type: 'resume' };
+  | { type: 'resume' }
+  | { type: 'calendar'; topic?: string };
 
 export type HelpOption = { label: string; next?: string; action?: HelpAction };
 export type HelpNode = { bot: string[]; options: HelpOption[] };
@@ -24,6 +25,7 @@ export const HELP: Record<string, HelpNode> = {
       { label: 'I need a website or app', next: 'build' },
       { label: 'We’re an NGO', next: 'ngo' },
       { label: 'How much does it cost?', next: 'cost' },
+      { label: 'Book a call with David', action: { type: 'calendar' } },
       { label: 'Just looking around', next: 'browse' }
     ]
   },
@@ -74,11 +76,11 @@ export const HELP: Record<string, HelpNode> = {
   },
   ngo: {
     bot: ['Then you’re in the right place. A good part of David’s work is for non-profits.', 'He plans around grant budgets, sets up tools field teams can actually use, and supports country offices remotely.'],
-    options: [{ label: 'What NGO services include', action: { type: 'service', id: 'ngo' } }, { label: 'Who he’s worked with', action: { type: 'career', org: 'Helping Hand for Relief & Development' } }, { label: 'Talk to David', action: { type: 'mail', subject: 'NGO enquiry' } }, START_OVER]
+    options: [{ label: 'What NGO services include', action: { type: 'service', id: 'ngo' } }, { label: 'Who he’s worked with', action: { type: 'career', org: 'Helping Hand for Relief & Development' } }, { label: 'Book a call', action: { type: 'calendar', topic: 'Technology for our NGO' } }, { label: 'Email David', action: { type: 'mail', subject: 'NGO enquiry' } }, START_OVER]
   },
   cost: {
     bot: ['Honest answer: it depends on the job.', 'The Quote Calculator sizes it up in under a minute, and NGO budgets are always welcome.'],
-    options: [{ label: 'Open the Quote Calculator', action: { type: 'quote' } }, { label: 'Ask for a quote', action: { type: 'mail', subject: 'Quote request' } }, START_OVER]
+    options: [{ label: 'Open the Quote Calculator', action: { type: 'quote' } }, { label: 'Book a call', action: { type: 'calendar', topic: 'A quote for our project' } }, { label: 'Ask for a quote by email', action: { type: 'mail', subject: 'Quote request' } }, START_OVER]
   },
   browse: {
     bot: ['Enjoy! A few good places to start:', 'Tip: press ⌘K (or Ctrl+K) anywhere and type what you need, in plain words.'],

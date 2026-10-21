@@ -3,15 +3,15 @@
 import { createContext, useCallback, useContext, useMemo, useReducer, type ReactNode } from 'react';
 import { FOLDERS, type FolderName, type Item, PROJECTS, type Project, type ServiceId } from '@/data/portfolio';
 
-export type AppKey = 'finder' | 'about' | 'helpdesk' | 'services' | 'career' | 'quote' | 'mail' | 'terminal' | 'site' | 'preview' | 'trash';
-export type WinKind = 'finder' | 'about' | 'site' | 'services' | 'career' | 'project' | 'resume' | 'mail' | 'terminal' | 'helpdesk' | 'quote';
+export type AppKey = 'finder' | 'about' | 'helpdesk' | 'services' | 'career' | 'calendar' | 'quote' | 'mail' | 'terminal' | 'settings' | 'site' | 'preview' | 'trash';
+export type WinKind = 'finder' | 'about' | 'site' | 'services' | 'career' | 'project' | 'resume' | 'mail' | 'terminal' | 'helpdesk' | 'quote' | 'calendar' | 'settings' | 'junk';
 
 export const APP_NAMES: Record<AppKey, string> = {
-  finder: 'Finder', about: 'About David', helpdesk: 'Help Desk', services: 'Services', career: 'Career', quote: 'Quote Calculator', mail: 'Mail',
+  finder: 'Finder', about: 'About David', helpdesk: 'Help Desk', services: 'Services', career: 'Career', calendar: 'Calendar', quote: 'Quote Calculator', mail: 'Mail', settings: 'System Settings',
   terminal: 'Terminal', site: 'About This Site', preview: 'Preview', trash: 'Trash'
 };
 
-export type WinProps = { folder?: FolderName; service?: ServiceId; index?: number; projectId?: string; subject?: string; body?: string; node?: string; ask?: string };
+export type WinProps = { folder?: FolderName; service?: ServiceId; index?: number; projectId?: string; subject?: string; body?: string; node?: string; ask?: string; pane?: string; junk?: string };
 export type Win = { id: string; app: AppKey; kind: WinKind; title: string; props: WinProps; z: number; min: boolean; nonce: number };
 type OpenSpec = Omit<Win, 'z' | 'min' | 'nonce'>;
 
@@ -100,10 +100,13 @@ export function useApps() {
       mail: (subject?: string, body?: string) => open({ id: 'mail', app: 'mail', kind: 'mail', title: 'New Message', props: { subject, body } }),
       helpdesk: (node?: string, ask?: string) => open({ id: 'helpdesk', app: 'helpdesk', kind: 'helpdesk', title: 'Help Desk', props: { node, ask } }),
       quote: () => open({ id: 'quote', app: 'quote', kind: 'quote', title: 'Quote Calculator', props: {} }),
+      calendar: (topic?: string) => open({ id: 'calendar', app: 'calendar', kind: 'calendar', title: 'Book a Call', props: { subject: topic } }),
+      settings: (pane?: string) => open({ id: 'settings', app: 'settings', kind: 'settings', title: 'System Settings', props: { pane } }),
+      junk: (name: string) => open({ id: 'junk', app: 'finder', kind: 'junk', title: name, props: { junk: name } }),
       terminal: () => open({ id: 'terminal', app: 'terminal', kind: 'terminal', title: 'guest — zsh — 80×24', props: {} })
     };
     const launch: Record<AppKey, () => void> = {
-      finder: () => a.finder(), about: a.about, helpdesk: () => a.helpdesk(), services: () => a.services(), career: () => a.career(), quote: a.quote, mail: () => a.mail(),
+      finder: () => a.finder(), about: a.about, helpdesk: () => a.helpdesk(), services: () => a.services(), career: () => a.career(), calendar: () => a.calendar(), quote: a.quote, mail: () => a.mail(), settings: () => a.settings(),
       terminal: a.terminal, site: a.site, preview: a.resume, trash: () => a.finder('Trash')
     };
     const openItem = (it: Item) => {
@@ -113,7 +116,8 @@ export function useApps() {
         case 'service': return a.services(it.ref.id);
         case 'work': return a.career(WORK_INDEX(it.ref.org));
         case 'pdf': return a.resume();
-        case 'app': return ({ about: a.about, mail: () => a.mail(), site: a.site, helpdesk: () => a.helpdesk(), quote: a.quote })[it.icon]();
+        case 'app': return ({ about: a.about, mail: () => a.mail(), site: a.site, helpdesk: () => a.helpdesk(), quote: a.quote, calendar: () => a.calendar(), settings: () => a.settings() })[it.icon]();
+        case 'junk': return a.junk(it.name);
         case 'file': return toast(`“${it.name}” is in the Trash. It is staying there.`);
       }
     };

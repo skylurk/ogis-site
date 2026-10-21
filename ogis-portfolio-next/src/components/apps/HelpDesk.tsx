@@ -43,13 +43,14 @@ export default function HelpDesk({ win }: { win: Win }) {
       case 'career': return apps.career(Math.max(0, WORK.findIndex(w => w.org === a.org)));
       case 'quote': return apps.quote();
       case 'resume': return apps.resume();
+      case 'calendar': return apps.calendar(a.topic ?? (lastAsk.current || undefined));
     }
   };
   const choose = (o: HelpOption) => {
     add('me', o.label);
     if (o.next) { if (o.next === 'start') lastAsk.current = ''; return goTo(o.next); }
     if (o.action) {
-      const where = { mail: 'Opening Mail with a note for David.', service: 'Opening that for you.', project: 'Opening the project.', career: 'Opening Career.', quote: 'Opening the Quote Calculator.', resume: 'Opening his résumé.' }[o.action.type];
+      const where = { mail: 'Opening Mail with a note for David.', service: 'Opening that for you.', project: 'Opening the project.', career: 'Opening Career.', quote: 'Opening the Quote Calculator.', resume: 'Opening his résumé.', calendar: 'Opening David’s calendar. Pick any free time.' }[o.action.type];
       later(() => add('bot', where), 300);
       later(() => perform(o.action!), 650);
     }

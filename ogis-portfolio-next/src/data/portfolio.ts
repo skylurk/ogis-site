@@ -1,5 +1,6 @@
 // Everything a visitor reads lives here. Edit this file to update the site.
 import type { GlyphKey } from '@/lib/icons';
+import { type Junk, TRASH } from './trash';
 
 export type ServiceId = 'support' | 'dev' | 'ngo';
 export type Service = { id: ServiceId; name: string; icon: GlyphKey; tagline: string; items: [string, string][]; orgs: string[] };
@@ -106,24 +107,25 @@ export type Item =
   | { type: 'work'; name: string; ref: Work }
   | { type: 'pdf'; name: string }
   | { type: 'file'; name: string }
-  | { type: 'app'; name: string; icon: 'about' | 'mail' | 'site' | 'helpdesk' | 'quote' };
+  | { type: 'junk'; name: string; ref: Junk }
+  | { type: 'app'; name: string; icon: 'about' | 'mail' | 'site' | 'helpdesk' | 'quote' | 'calendar' | 'settings' };
 
 export const FOLDERS: Record<FolderName, Item[]> = {
   Services: SERVICES.map(s => ({ type: 'service', name: s.name, ref: s })),
   Projects: PROJECTS.map(p => ({ type: 'project', name: p.name, ref: p })),
   Career: WORK.map(w => ({ type: 'work', name: w.org, ref: w })),
   'NGO Work': [{ type: 'service', name: SERVICES[2].name, ref: SERVICES[2] }, ...WORK.filter(w => w.ngo).map(w => ({ type: 'work' as const, name: w.org, ref: w }))],
-  Trash: [{ type: 'file', name: 'website-final-FINAL-v3.psd' }, { type: 'file', name: 'printer-drivers-2009.exe' }]
+  Trash: TRASH.map(j => ({ type: 'junk', name: j.name, ref: j }))
 };
 export const FOLDER_NOTES: Record<FolderName, string> = {
   Services: 'Open a service to see what it includes',
   Projects: 'Products we have designed and built',
   Career: 'Each folder opens that chapter in Career',
   'NGO Work': 'Software and support for non-profits',
-  Trash: ''
+  Trash: 'Things David throws out for clients. Open one to see what replaced it'
 };
 export const DESKTOP_ITEMS: Item[] = [
-  { type: 'app', icon: 'helpdesk', name: 'Help Desk' }, { type: 'app', icon: 'quote', name: 'Quote Calculator' },
+  { type: 'app', icon: 'helpdesk', name: 'Help Desk' }, { type: 'app', icon: 'calendar', name: 'Book a Call' }, { type: 'app', icon: 'quote', name: 'Quote Calculator' },
   { type: 'folder', name: 'Services' }, { type: 'folder', name: 'Projects' }, { type: 'folder', name: 'Career' }, { type: 'folder', name: 'NGO Work' },
   { type: 'pdf', name: 'David Résumé.pdf' }, { type: 'app', icon: 'about', name: 'About David' }, { type: 'app', icon: 'mail', name: 'Contact' },
   { type: 'app', icon: 'site', name: 'About This Site' }

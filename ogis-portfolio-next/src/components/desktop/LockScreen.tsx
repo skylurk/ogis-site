@@ -18,6 +18,7 @@ export default function LockScreen({ locked, onUnlock }: { locked: boolean; onUn
         <div className="avatar">{OWNER.initials}</div>
         <div className="name">{OWNER.name} · {OWNER.studio}</div>
         <div className="hint">{phone ? 'Tap to open' : 'Tech support · Development · NGO software · Click to enter'}</div>
+        <a className="lock-simple" href="/simple" onClick={e => e.stopPropagation()}>Prefer a simple page? Open the simple view</a>
       </div>
     </div>
   );

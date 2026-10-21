@@ -1,14 +1,21 @@
 import type { ReactNode } from 'react';
 import { FolderName, Item, Project, Work } from '@/data/portfolio';
 import { folderSVG, GLYPH, GlyphKey, SVG, Tint } from '@/lib/icons';
+import { FULL_ICONS } from './AppIcons';
+import { JUNK_ICONS } from '@/lib/icons';
+
+export type IconKey = GlyphKey | 'calendar' | 'settings' | 'resume';
 
 /** Renders one of the static SVG strings from lib/icons without adding a layout box. */
 export function Svg({ html }: { html: string }) {
   return <span className="svgwrap" dangerouslySetInnerHTML={{ __html: html }} />;
 }
 
-export function AppIcon({ k, className = '' }: { k: GlyphKey; className?: string }) {
-  return <div className={`app-icon ai-${k} ${className}`} dangerouslySetInnerHTML={{ __html: GLYPH[k] }} />;
+/** An app icon. Apps with full artwork (Finder, Mail, Calendar…) use it; the rest use a glyph on a gradient. */
+export function AppIcon({ k, className = '' }: { k: IconKey; className?: string }) {
+  const Full = FULL_ICONS[k];
+  if (Full && !className.includes('set-ico')) return <div className={`app-icon full ${className}`}><Full /></div>;
+  return <div className={`app-icon ai-${k} ${className}`} dangerouslySetInnerHTML={{ __html: GLYPH[k as GlyphKey] ?? '' }} />;
 }
 
 export function ProjIcon({ p }: { p: Project }) {
@@ -38,6 +45,7 @@ export function ItemIcon({ it }: { it: Item }): ReactNode {
     case 'work': return <Svg html={folderSVG(it.ref.ngo ? 'pink' : it.ref.kind === 'emp' ? 'teal' : 'orange')} />;
     case 'pdf': return <Svg html={SVG.pdf} />;
     case 'file': return <Svg html={SVG.file} />;
+    case 'junk': return <Svg html={JUNK_ICONS[it.ref.icon]} />;
     case 'app': return <AppIcon k={it.icon} />;
   }
 }

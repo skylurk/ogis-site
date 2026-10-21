@@ -4,7 +4,10 @@ import { useEffect, useRef, useState, type ComponentType } from 'react';
 import About from '../apps/About';
 import AboutSite from '../apps/AboutSite';
 import Career from '../apps/Career';
+import Calendar from '../apps/Calendar';
 import Finder from '../apps/Finder';
+import JunkWindow from '../apps/JunkWindow';
+import Settings from '../apps/Settings';
 import HelpDesk from '../apps/HelpDesk';
 import Mail from '../apps/Mail';
 import ProjectWindow from '../apps/ProjectWindow';
@@ -19,13 +22,14 @@ import LockScreen from './LockScreen';
 import Menu, { type MenuItem } from './Menu';
 import MenuBar from './MenuBar';
 import Spotlight from './Spotlight';
-import Wallpaper, { cycleWallpaper } from './Wallpaper';
+import Wallpaper from './Wallpaper';
 import { usePhone } from './usePhone';
 import PhoneHome from '../phone/PhoneHome';
 
 const WINDOWS: Record<WinKind, ComponentType<{ win: Win }>> = {
   finder: Finder, about: About, site: AboutSite, services: Services, career: Career,
-  project: ProjectWindow, resume: Resume, mail: Mail, terminal: Terminal, helpdesk: HelpDesk, quote: QuoteCalculator
+  project: ProjectWindow, resume: Resume, mail: Mail, terminal: Terminal, helpdesk: HelpDesk, quote: QuoteCalculator,
+  calendar: Calendar, settings: Settings, junk: JunkWindow
 };
 
 function Shell() {
@@ -46,7 +50,7 @@ function Shell() {
   useEffect(() => { document.body.classList.toggle('locked', d.locked); }, [d.locked]);
   useEffect(() => {
     const key = (e: KeyboardEvent) => {
-      if (d.locked) { unlock(); e.preventDefault(); return; }
+      if (d.locked) { if (e.key === 'Tab' || e.key === 'Shift') return; unlock(); e.preventDefault(); return; }
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); d.setSpot(!d.spot); }
       if (e.key === 'Escape') { d.setSpot(false); setCtx(null); }
     };
@@ -60,7 +64,7 @@ function Shell() {
     return () => { document.removeEventListener('keydown', key); document.removeEventListener('pointerdown', down); };
   });
 
-  const ctxItems: MenuItem[] = [['New Finder Window', '', () => apps.finder('Projects')], '-', ['Change Wallpaper', '', cycleWallpaper],
+  const ctxItems: MenuItem[] = [['New Finder Window', '', () => apps.finder('Projects')], '-', ['Change Wallpaper…', '', () => apps.settings('wallpaper')], ['Appearance…', '', () => apps.settings('appearance')],
     ['Open Terminal', '', apps.terminal], '-', ['Get Info', '', apps.site], ['Lock Screen', '', () => d.setLocked(true)]];
 
   return (
@@ -68,6 +72,7 @@ function Shell() {
       if (phone || (e.target as HTMLElement).closest('.win,.dock,.menubar,.menu')) return;
       e.preventDefault(); setCtx({ x: e.clientX, y: e.clientY });
     }}>
+      <a className="skip-link" href="/simple">Skip to the simple, accessible version</a>
       <Wallpaper />
       {phone ? <PhoneHome /> : <><MenuBar /><DesktopIcons /></>}
       <div className="desk">

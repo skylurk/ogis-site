@@ -37,10 +37,27 @@ const G = {
   trash: '<svg viewBox="0 0 64 64"><path d="M14 16h36l-3.5 38a3 3 0 0 1-3 2.7H20.5a3 3 0 0 1-3-2.7z" fill="rgba(255,255,255,.55)" stroke="#8c96a8" stroke-width="2"/><ellipse cx="32" cy="16" rx="19" ry="3.6" fill="#dfe5ee" stroke="#8c96a8" stroke-width="2"/><path d="M24 24l2 26M32 24v26M40 24l-2 26" stroke="#9ea8b8" stroke-width="1.6" stroke-linecap="round"/></svg>',
   helpdesk: '<svg viewBox="0 0 64 64"><path d="M14 14h28a8 8 0 0 1 8 8v12a8 8 0 0 1-8 8H28l-9 7v-7h-5a8 8 0 0 1-8-8V22a8 8 0 0 1 8-8z" fill="#fff"/><path d="M52 26h2a6 6 0 0 1 6 6v9a6 6 0 0 1-6 6h-2v5l-7-5h-7" fill="none" stroke="#fff" stroke-width="3" stroke-linejoin="round" opacity=".7"/><circle cx="20" cy="28" r="2.6" fill="#1fa463"/><circle cx="28" cy="28" r="2.6" fill="#1fa463"/><circle cx="36" cy="28" r="2.6" fill="#1fa463"/></svg>',
   quote: '<svg viewBox="0 0 64 64"><rect x="14" y="10" width="36" height="12" rx="3" fill="#e9eaee"/>' + [0, 1, 2].map(r => [0, 1, 2].map(c => `<circle cx="${20 + c * 12}" cy="${32 + r * 10}" r="4.2" fill="${c === 2 ? '#ff9f0a' : '#6b6e76'}"/>`).join('')).join('') + '</svg>',
-  site: '<svg viewBox="0 0 24 24" style="color:#fff">' + SVG.logo.slice(SVG.logo.indexOf('>') + 1)
+  site: '<svg viewBox="0 0 24 24" style="color:#fff">' + SVG.logo.slice(SVG.logo.indexOf('>') + 1),
+  settings: '<svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="18" fill="none" stroke="#fff" stroke-width="7" stroke-dasharray="6.5 4.8"/><circle cx="32" cy="32" r="9" fill="none" stroke="#fff" stroke-width="4"/></svg>',
+  calendar: '<svg viewBox="0 0 64 64"><rect x="12" y="14" width="40" height="38" rx="6" fill="#fff"/><rect x="12" y="14" width="40" height="11" rx="5" fill="#ff3b30"/><path d="M22 34h6M36 34h6M22 43h6M36 43h6" stroke="#8e8e93" stroke-width="4" stroke-linecap="round"/></svg>',
+  appearance: '<svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="18" fill="none" stroke="#fff" stroke-width="5"/><path d="M32 14a18 18 0 0 1 0 36z" fill="#fff"/></svg>',
+  wallpaper: '<svg viewBox="0 0 64 64"><path d="M14 46c8-12 14-12 20-4s12 6 16-6" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round"/><circle cx="42" cy="22" r="6" fill="#fff"/></svg>',
+  access: '<svg viewBox="0 0 64 64"><circle cx="32" cy="16" r="5.5" fill="#fff"/><path d="M16 25l16 3 16-3M32 28v12l-8 13M32 40l8 13" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>'
 };
 export type GlyphKey = keyof typeof G;
 export const GLYPH: Record<GlyphKey, string> = G;
+
+/** File icons for the joke files in the Trash. */
+const page = (body: string, fold = '#e4e8ef') => `<svg viewBox="0 0 48 60" aria-hidden="true" style="height:56px"><path d="M6 2h26l14 14v40a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z" fill="#fff" stroke="#d6dae2"/><path d="M32 2v12a2 2 0 0 0 2 2h12" fill="${fold}" stroke="#d6dae2"/>${body}</svg>`;
+export const JUNK_ICONS = {
+  doc: page('<path d="M11 26h26M11 32h26M11 38h26M11 44h18" stroke="#c7ccd6" stroke-width="2.4" stroke-linecap="round"/>'),
+  sheet: page('<rect x="10" y="22" width="28" height="26" rx="2" fill="#e8f6ec" stroke="#34a853"/><path d="M10 30h28M10 38h28M20 22v26M29 22v26" stroke="#34a853" stroke-width="1.2"/>', '#e8f6ec'),
+  zip: page('<path d="M24 4v6M24 14v6M24 24v6" stroke="#9aa3b2" stroke-width="3"/><rect x="19" y="32" width="10" height="12" rx="2" fill="#9aa3b2"/>'),
+  exe: '<svg viewBox="0 0 56 56" aria-hidden="true" style="height:52px"><rect x="4" y="8" width="48" height="40" rx="5" fill="#eef1f5" stroke="#b9c1cd"/><rect x="4" y="8" width="48" height="9" rx="4" fill="#cfd5de"/><path d="M28 24l10 17H18z" fill="#ffcc00" stroke="#c79a00" stroke-linejoin="round"/><path d="M28 30v5" stroke="#5a4a00" stroke-width="2.4" stroke-linecap="round"/><circle cx="28" cy="38" r="1.3" fill="#5a4a00"/></svg>',
+  sticky: '<svg viewBox="0 0 56 56" aria-hidden="true" style="height:52px"><path d="M6 6h44v34L36 50H6z" fill="#ffe86b" stroke="#e0c13b"/><path d="M36 50V40h14" fill="#f2d24a" stroke="#e0c13b"/><path d="M12 18c6-3 10 2 16-1s9 1 14-1M12 27c5-2 9 1 13-1" stroke="#7a6a1a" stroke-width="2" fill="none" stroke-linecap="round"/></svg>',
+  wifi: page('<path d="M13 34a16 16 0 0 1 22 0M17 39a10 10 0 0 1 14 0" stroke="#2a7cf7" stroke-width="2.6" fill="none" stroke-linecap="round"/><circle cx="24" cy="44" r="2" fill="#2a7cf7"/>')
+};
+export type JunkIcon = keyof typeof JUNK_ICONS;
 
 // Tahoe lets folders take a tint and a symbol; each top-level folder gets its own.
 export const TINTS = {

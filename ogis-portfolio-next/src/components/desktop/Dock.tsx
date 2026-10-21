@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, type PointerEvent } from 'react';
 import { APP_NAMES, type AppKey, isPhone, useApps, useDesktop } from './DesktopContext';
 import { AppIcon } from './Icons';
 
-const DOCK: (AppKey | '|')[] = ['finder', 'helpdesk', 'about', 'services', 'career', 'quote', 'mail', 'terminal', '|', 'trash'];
+const DOCK: (AppKey | '|')[] = ['finder', 'helpdesk', 'about', 'services', 'career', 'calendar', 'quote', 'mail', 'terminal', 'settings', '|', 'trash'];
 const BASE = 54, MAX = 82;
 
 export default function Dock() {

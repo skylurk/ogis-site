@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import { FOLDER_NOTES, FOLDERS, type FolderName } from '@/data/portfolio';
+import { EMPTY_TRASH_REPLIES } from '@/data/trash';
 import { SVG } from '@/lib/icons';
-import { isCoarse, useApps, type Win } from '../desktop/DesktopContext';
+import { isCoarse, useApps, useDesktop, type Win } from '../desktop/DesktopContext';
 import { ItemIcon, Svg } from '../desktop/Icons';
 import WindowFrame from '../desktop/WindowFrame';
 
@@ -12,6 +13,8 @@ const TAGS: [string, string, FolderName][] = [['#2a7cf7', 'Employment', 'Career'
 
 export default function Finder({ win }: { win: Win }) {
   const apps = useApps();
+  const { toast } = useDesktop();
+  const [empties, setEmpties] = useState(0);
   const start = win.props.folder ?? 'Projects';
   const [nav, setNav] = useState({ hist: [start], pos: 0 });
   const [q, setQ] = useState('');
@@ -51,7 +54,10 @@ export default function Finder({ win }: { win: Win }) {
           {TAGS.map(([c, t, f]) => <button key={t} onClick={() => go(f)}><span className="tag" style={{ background: c }} />{t}</button>)}
         </nav>
         <div className="f-main">
-          <div className="f-status">{items.length} item{items.length === 1 ? '' : 's'}{note ? ' · ' + note : ''}</div>
+          <div className="f-status">
+            <span>{items.length} item{items.length === 1 ? '' : 's'}{note ? ' · ' + note : ''}</span>
+            {folder === 'Trash' && <button className="btn" onClick={() => { toast(EMPTY_TRASH_REPLIES[empties % EMPTY_TRASH_REPLIES.length]); setEmpties(n => n + 1); }}>Empty Trash</button>}
+          </div>
           {items.length ? (
             <div className="grid">
               {items.map((it, i) => (

@@ -2,23 +2,42 @@
 
 import { useEffect, useState } from 'react';
 
-const WALLS = ['', 'dusk', 'lake', 'night'];
+export const WALLPAPERS = [
+  { v: '', name: 'Tahoe', note: 'Day in light mode, night in dark' },
+  { v: 'dusk', name: 'Dusk', note: 'Warm evening' },
+  { v: 'lake', name: 'Lake', note: 'Cool and calm' },
+  { v: 'night', name: 'Night', note: 'Always dark' }
+];
 const EVENT = 'ogis:wallpaper';
 const KEY = 'ogis-wall';
 
-/** Moves to the next wallpaper. Callable from anywhere (menus, windows). */
-export function cycleWallpaper() { window.dispatchEvent(new Event(EVENT)); }
+const readIndex = () => { try { return +(localStorage.getItem(KEY) || 0) % WALLPAPERS.length; } catch { return 0; } };
 
-export default function Wallpaper() {
+/** Sets the wallpaper by index, or moves to the next one when no index is given. */
+export function setWallpaper(i?: number) { window.dispatchEvent(new CustomEvent(EVENT, { detail: i })); }
+export const cycleWallpaper = () => setWallpaper();
+
+/** The current wallpaper index, kept in sync across the desktop and System Settings. */
+export function useWallpaper() {
   const [i, setI] = useState(0);
   useEffect(() => {
-    try { setI(+(localStorage.getItem(KEY) || 0) % WALLS.length); } catch {}
-    const next = () => setI(n => { const v = (n + 1) % WALLS.length; try { localStorage.setItem(KEY, String(v)); } catch {} return v; });
-    window.addEventListener(EVENT, next);
-    return () => window.removeEventListener(EVENT, next);
+    setI(readIndex());
+    const on = (e: Event) => setI(n => {
+      const d = (e as CustomEvent<number | undefined>).detail;
+      const v = d === undefined ? (n + 1) % WALLPAPERS.length : d;
+      try { localStorage.setItem(KEY, String(v)); } catch { /* private mode */ }
+      return v;
+    });
+    window.addEventListener(EVENT, on);
+    return () => window.removeEventListener(EVENT, on);
   }, []);
+  return i;
+}
+
+/** The wallpaper artwork. `mini` draws a small preview for System Settings. */
+export function WallArt({ v, mini = false }: { v: string; mini?: boolean }) {
   return (
-    <div className="wall" data-v={WALLS[i]}>
+    <div className={'wall' + (mini ? ' mini' : '')} data-v={v}>
       <i className="b1" /><i className="b2" /><i className="b3" />
       <svg viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
         <path d="M0 600C300 500 620 690 930 590S1400 450 1600 540V1000H0Z" fill="rgba(255,255,255,.10)" />
@@ -29,4 +48,9 @@ export default function Wallpaper() {
       </svg>
     </div>
   );
+}
+
+export default function Wallpaper() {
+  const i = useWallpaper();
+  return <WallArt v={WALLPAPERS[i].v} />;
 }

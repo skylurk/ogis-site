@@ -1,10 +1,9 @@
 'use client';
 
 import { OWNER } from '@/data/portfolio';
-import { useDesktop, type Win } from '../desktop/DesktopContext';
+import { useApps, useDesktop, type Win } from '../desktop/DesktopContext';
 import { AppIcon } from '../desktop/Icons';
 import WindowFrame from '../desktop/WindowFrame';
-import { cycleWallpaper } from '../desktop/Wallpaper';
 
 const ROWS: [string, string][] = [
   ['Look', 'macOS Tahoe, Liquid Glass'],
@@ -18,6 +17,7 @@ const ROWS: [string, string][] = [
 
 export default function AboutSite({ win }: { win: Win }) {
   const { setLocked } = useDesktop();
+  const apps = useApps();
   return (
     <WindowFrame win={win} w={440} h={520}>
       <div className="about">
@@ -26,7 +26,8 @@ export default function AboutSite({ win }: { win: Win }) {
         <p className="sub">Portfolio OS · Version 26.1</p>
         <dl className="specs">{ROWS.map(([k, v]) => [<dt key={k + 't'}>{k}</dt>, <dd key={k + 'd'}>{v}</dd>])}</dl>
         <div className="btnrow">
-          <button className="btn" onClick={cycleWallpaper}>Change wallpaper</button>
+          <button className="btn" onClick={() => apps.settings('wallpaper')}>Change wallpaper</button>
+          <a className="btn" href="/simple">Simple view</a>
           <button className="btn" onClick={() => setLocked(true)}>Lock screen</button>
         </div>
       </div>
