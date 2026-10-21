@@ -13,7 +13,7 @@ type Dir = '~' | FolderName;
 type Out = {
   say: (node: ReactNode, cls?: string) => void;
   fail: (msg: ReactNode, fixes?: string[]) => false;
-  /** A reply that isn't an error but has somewhere useful to go next, offered through `fuck`. */
+  /** A reply that isn't an error but has somewhere useful to go next, offered through `fcvk`. */
   offer: (msg: ReactNode, fixes: string[]) => true;
 };
 
@@ -41,7 +41,7 @@ const MAN: Record<string, string> = {
   top: 'open windows, as processes', ps: 'open windows, as processes', which: 'locate a command', man: 'read about a command',
   ping: 'check a host is up', curl: 'fetch a URL', ssh: 'connect to a server', git: 'version control', npm: 'node package manager',
   node: 'JavaScript runtime', python3: 'Python', neofetch: 'system summary', sudo: 'run as administrator', rm: 'remove files',
-  fuck: 'fix the last command, like thefuck', exit: 'close Terminal'
+  fcvk: 'fix the last command, like thefuck', exit: 'close Terminal'
 };
 
 export default function Terminal({ win }: { win: Win }) {
@@ -50,7 +50,7 @@ export default function Terminal({ win }: { win: Win }) {
   const search = useSearch();
   const [lines, setLines] = useState<Line[]>(() => [
     { key: 0, node: `Last login: ${new Date().toDateString()} on ttys001`, cls: 'm' },
-    { key: 1, node: <>Welcome to {OWNER.studio}. Type <D>help</D> to see what you can do. Mistype something? Type <D>fuck</D>.</> }
+    { key: 1, node: <>Welcome to {OWNER.studio}. Type <D>help</D> to see what you can do. Mistype something? Type <D>fcvk</D>.</> }
   ]);
   const [input, setInput] = useState('');
   const [cwd, setCwdState] = useState<Dir>('~');
@@ -100,7 +100,7 @@ export default function Terminal({ win }: { win: Win }) {
   /* ---------- Commands ---------- */
   type Handler = (args: string[], o: Out) => boolean | void;
   const CMDS: Record<string, Handler> = {
-    help: (_, o) => o.say(<>{table([['whoami', MAN.whoami], ['services', MAN.services], ['projects', MAN.projects], ['career', MAN.career], ['skills', MAN.skills], ['contact', MAN.contact], ['hire', MAN.hire]], 10)}{'\n'}{table([['ls cd pwd', 'move around the folders'], ['cat open', 'read or open anything'], ['fuck', 'fix the command you just mistyped']], 10)}{'\n'}<M>Also: echo, history, man, which, date, uptime, uname, top, ping, curl, git, npm, sudo, neofetch, clear, exit</M></>),
+    help: (_, o) => o.say(<>{table([['whoami', MAN.whoami], ['services', MAN.services], ['projects', MAN.projects], ['career', MAN.career], ['skills', MAN.skills], ['contact', MAN.contact], ['hire', MAN.hire]], 10)}{'\n'}{table([['ls cd pwd', 'move around the folders'], ['cat open', 'read or open anything'], ['fcvk', 'fix the command you just mistyped']], 10)}{'\n'}<M>Also: echo, history, man, which, date, uptime, uname, top, ping, curl, git, npm, sudo, neofetch, clear, exit</M></>),
     whoami: (_, o) => o.say(`${OWNER.name} · ${OWNER.studio}\n${OWNER.role}, ${OWNER.city}`),
     services: (_, o) => o.say(<>{table(SERVICES.map(s => [s.name, s.tagline]), 23)}</>),
     projects: (_, o) => o.say(<>{table(PROJECTS.map(p => [p.name, p.kind]), 18)}</>),
@@ -262,7 +262,8 @@ export default function Terminal({ win }: { win: Win }) {
   CMDS.type = CMDS.cat;
   for (const ed of EDITORS) CMDS[ed] = (args, o) => o.say(`${ed}: ${args[0] ?? 'this file'} is read-only here. (And you can always leave vim with :q!)`);
   for (const c of READ_ONLY) CMDS[c] = (_, o) => o.fail(`${c}: Read-only file system. This desktop is a portfolio, not a scratchpad.`, []);
-  const FIX_WORDS = ['fuck', 'thefuck', 'fix'];
+  // `fcvk` is the advertised name; the uncensored spelling still works for anyone who types it.
+  const FIX_WORDS = ['fcvk', 'fuck', 'thefuck', 'fix'];
 
   /** Runs one command. Returns false if it failed, so `a && b` can stop early. */
   function exec(raw: string, o: Out): boolean {
@@ -307,7 +308,7 @@ export default function Terminal({ win }: { win: Win }) {
 
     if (FIX_WORDS.includes(raw.trim().toLowerCase())) {
       const fix = lastFail.current;
-      if (!fix?.fixes.length) out.push({ key: seq.current++, node: 'No fucks given' });
+      if (!fix?.fixes.length) out.push({ key: seq.current++, node: 'No fcvks given' });
       else setPending({ opts: fix.fixes, i: 0 });
       setLines(l => [...l, ...out]);
       return;
@@ -324,7 +325,7 @@ export default function Terminal({ win }: { win: Win }) {
     lastFail.current = failed;
     const f = failed as { fixes: string[]; offer?: boolean } | null;
     if (f?.fixes.length) out.push({ key: seq.current++, cls: 'm hint',
-      node: f.offer || f.fixes[0] === 'help' ? <>Type <D>fuck</D> for: {f.fixes[0]}</> : <>Mistyped? Type <D>fuck</D> to fix it.</> });
+      node: f.offer || f.fixes[0] === 'help' ? <>Type <D>fcvk</D> for: {f.fixes[0]}</> : <>Mistyped? Type <D>fcvk</D> to fix it.</> });
     setLines(l => clear ? [] : [...l, ...out]);
   }
 

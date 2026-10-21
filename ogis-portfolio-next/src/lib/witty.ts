@@ -1,6 +1,6 @@
 // Replies for things people type into the Terminal that aren't commands.
 // Each rule matches the whole line (lowercased, punctuation trimmed). `fixes` become
-// the suggestions offered by `fuck`, so a reply can point somewhere useful.
+// the suggestions offered by `fcvk`, so a reply can point somewhere useful.
 
 export type Witty = { match: RegExp; reply: string | ((m: RegExpMatchArray) => string); fixes?: string[] };
 
@@ -11,7 +11,7 @@ const greeting = () => {
 
 export const WITTY: Witty[] = [
   // Swearing at the terminal (or at David)
-  { match: /^(fuck|screw|damn) (you|u|off|this|it|david|ogis)\b.*$/, reply: m => m[2] === 'david' || m[2] === 'ogis'
+  { match: /^(fcvk|fuck|screw|damn) (you|u|off|this|it|david|ogis)\b.*$/, reply: m => m[2] === 'david' || m[2] === 'ogis'
       ? 'Easy there. I think you meant: hire David.'
       : 'Rude. Let’s turn that energy into something productive.', fixes: ['hire', 'services'] },
   { match: /^(wtf|omg|ugh|argh+)$/, reply: 'Breathe. Then type help.', fixes: ['help'] },
