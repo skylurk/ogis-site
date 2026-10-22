@@ -38,6 +38,8 @@ const G = {
   helpdesk: '<svg viewBox="0 0 64 64"><path d="M14 14h28a8 8 0 0 1 8 8v12a8 8 0 0 1-8 8H28l-9 7v-7h-5a8 8 0 0 1-8-8V22a8 8 0 0 1 8-8z" fill="#fff"/><path d="M52 26h2a6 6 0 0 1 6 6v9a6 6 0 0 1-6 6h-2v5l-7-5h-7" fill="none" stroke="#fff" stroke-width="3" stroke-linejoin="round" opacity=".7"/><circle cx="20" cy="28" r="2.6" fill="#1fa463"/><circle cx="28" cy="28" r="2.6" fill="#1fa463"/><circle cx="36" cy="28" r="2.6" fill="#1fa463"/></svg>',
   quote: '<svg viewBox="0 0 64 64"><rect x="14" y="10" width="36" height="12" rx="3" fill="#e9eaee"/>' + [0, 1, 2].map(r => [0, 1, 2].map(c => `<circle cx="${20 + c * 12}" cy="${32 + r * 10}" r="4.2" fill="${c === 2 ? '#ff9f0a' : '#6b6e76'}"/>`).join('')).join('') + '</svg>',
   site: '<svg viewBox="0 0 24 24" style="color:#fff">' + SVG.logo.slice(SVG.logo.indexOf('>') + 1),
+  hand: '<svg viewBox="0 0 64 64"><path d="M32 33S19 25.5 19 17a7 7 0 0 1 13-3.4A7 7 0 0 1 45 17c0 8.5-13 16-13 16z" fill="#fff"/><path d="M6 41h9l11 6h11a3.5 3.5 0 0 1 0 7H25" fill="none" stroke="#fff" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M37 50l14-8a3.5 3.5 0 0 1 4 5.6L39 59H6" fill="none" stroke="#fff" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  book: '<svg viewBox="0 0 64 64"><path d="M6 15c9-3 18-2 26 4v34c-8-6-17-7-26-4z" fill="#fff"/><path d="M58 15c-9-3-18-2-26 4v34c8-6 17-7 26-4z" fill="#fff" opacity=".82"/><path d="M12 24c5-1 10-.5 14 2M12 32c5-1 10-.5 14 2M38 26c4-2.5 9-3 14-2M38 34c4-2.5 9-3 14-2" stroke="#000" stroke-opacity=".18" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg>',
   settings: '<svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="18" fill="none" stroke="#fff" stroke-width="7" stroke-dasharray="6.5 4.8"/><circle cx="32" cy="32" r="9" fill="none" stroke="#fff" stroke-width="4"/></svg>',
   calendar: '<svg viewBox="0 0 64 64"><rect x="12" y="14" width="40" height="38" rx="6" fill="#fff"/><rect x="12" y="14" width="40" height="11" rx="5" fill="#ff3b30"/><path d="M22 34h6M36 34h6M22 43h6M36 43h6" stroke="#8e8e93" stroke-width="4" stroke-linecap="round"/></svg>',
   appearance: '<svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="18" fill="none" stroke="#fff" stroke-width="5"/><path d="M32 14a18 18 0 0 1 0 36z" fill="#fff"/></svg>',
@@ -68,6 +70,13 @@ export const TINTS = {
   teal: ['#1f9d93', '#4cc7bb', '#9de9e0', '#36b2a6']
 } as const;
 export type Tint = keyof typeof TINTS;
+
+/** A tinted folder with a round badge carrying an organisation's emblem. */
+export function badgedFolderSVG(tint: Tint, glyph: GlyphKey, colors: [string, string]) {
+  const inner = G[glyph].replace(/^<svg[^>]*>|<\/svg>$/g, '');
+  const id = 'b' + glyph;
+  return folderSVG(tint).replace('</svg>', `<defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${colors[0]}"/><stop offset="1" stop-color="${colors[1]}"/></linearGradient></defs><circle cx="47" cy="38" r="13" fill="url(#${id})" stroke="#fff" stroke-width="2"/><g transform="translate(37.4 28.4) scale(.3)">${inner}</g></svg>`);
+}
 
 /** A plain folder with a padlock badge, for the suspicious "Homework" folder. */
 export function lockedFolderSVG() {

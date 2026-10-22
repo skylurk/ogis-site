@@ -4,7 +4,7 @@ import { type Junk, TRASH } from './trash';
 
 export type ServiceId = 'support' | 'dev' | 'ngo';
 export type Service = { id: ServiceId; name: string; icon: GlyphKey; tagline: string; items: [string, string][]; orgs: string[] };
-export type Work = { org: string; role: string; years: string; from: number; kind: 'emp' | 'con'; ngo?: boolean; c: [string, string]; body: string; hl: string[] };
+export type Work = { org: string; role: string; years: string; from: number; kind: 'emp' | 'con'; ngo?: boolean; c: [string, string]; body: string; hl: string[]; glyph?: GlyphKey };
 export type VizKind = 'map' | 'geo' | 'term' | 'db' | 'qr' | 'road';
 export type Project = { id: string; name: string; glyph: GlyphKey; kind: string; status?: string; g: [string, string]; viz: VizKind; body: string; tags: string[] };
 
@@ -46,9 +46,9 @@ export const WORK: Work[] = [
     body: "Designing, building and maintaining the company's products, including learning management systems, visitor management systems and e-commerce platforms.", hl: ['LMS', 'Visitor management', 'E-commerce'] },
   { org: 'Africaworks', role: 'ICT Officer', years: '2022 – Present', from: 2022, kind: 'con', c: ['#ffb547', '#d9741c'],
     body: 'Daily tech operations: researching and rolling out software, building payment gateways, integrating management and operations software, email management and desktop support.', hl: ['Payment gateways', 'Software integration', 'Desktop support'] },
-  { org: 'Helping Hand for Relief & Development', role: 'Tech Support', years: '2019 – Present', from: 2019, kind: 'con', ngo: true, c: ['#ff8fb0', '#c92f62'],
+  { org: 'Helping Hand for Relief & Development', role: 'Tech Support', years: '2019 – Present', from: 2019, kind: 'con', ngo: true, c: ['#ff8fb0', '#c92f62'], glyph: 'hand',
     body: 'Tech lead for the East African branch: email management, desktop support, IT budgeting and acquisition, server administration, networking and integrations.', hl: ['Server administration', 'Networking', 'IT budgeting'] },
-  { org: 'SomaSawa', role: 'Website Developer', years: '2021 – Present', from: 2021, kind: 'con', ngo: true, c: ['#7fdc9b', '#23935a'],
+  { org: 'SomaSawa', role: 'Website Developer', years: '2021 – Present', from: 2021, kind: 'con', ngo: true, c: ['#7fdc9b', '#23935a'], glyph: 'book',
     body: "Designing and maintaining the NGO's website, running its search engine optimisation and keeping the site running smoothly.", hl: ['Web design', 'SEO', 'Maintenance'] },
   { org: 'Kasas Kenya', role: 'Software Developer', years: '2019 – 2022', from: 2019, kind: 'emp', c: ['#48c6ef', '#1a6fb3'],
     body: 'Designed and built a range of software products, including an aircraft and crew management system, and maintained the existing applications. Also researched and rolled out SaaS tools.', hl: ['Aircraft & crew management', 'SaaS rollout', 'App maintenance'] },

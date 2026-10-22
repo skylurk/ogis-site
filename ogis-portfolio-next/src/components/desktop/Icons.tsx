@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import { FolderName, Item, Project, Work } from '@/data/portfolio';
 import { folderSVG, GLYPH, GlyphKey, SVG, Tint } from '@/lib/icons';
 import { FULL_ICONS } from './AppIcons';
-import { JUNK_ICONS, lockedFolderSVG } from '@/lib/icons';
+import { badgedFolderSVG, JUNK_ICONS, lockedFolderSVG } from '@/lib/icons';
 
 export type IconKey = GlyphKey | 'calendar' | 'settings' | 'resume';
 
@@ -24,8 +24,11 @@ export function ProjIcon({ p }: { p: Project }) {
 
 export const initials = (s: string) => s.replace(/&/g, '').split(/\s+/).filter(w => /^[A-Z]/.test(w)).slice(0, 2).map(w => w[0]).join('');
 
+/** An organisation's badge: its emblem when it has one, otherwise its initials. */
 export function OrgDot({ w, className = 'orgdot' }: { w: Work; className?: string }) {
-  return <span className={className} style={{ background: `linear-gradient(150deg,${w.c[0]},${w.c[1]})` }}>{initials(w.org)}</span>;
+  const style = { background: `linear-gradient(150deg,${w.c[0]},${w.c[1]})` };
+  if (w.glyph) return <span className={className + ' has-glyph'} style={style} role="img" aria-label={w.org} dangerouslySetInnerHTML={{ __html: GLYPH[w.glyph] }} />;
+  return <span className={className} style={style}>{initials(w.org)}</span>;
 }
 
 export const FOLDER_STYLE: Record<Exclude<FolderName, 'Trash'>, [Tint, GlyphKey]> = {
@@ -42,7 +45,10 @@ export function ItemIcon({ it }: { it: Item }): ReactNode {
     case 'folder': return <FolderIcon name={it.name} />;
     case 'project': return <ProjIcon p={it.ref} />;
     case 'service': return <AppIcon k={it.ref.icon} />;
-    case 'work': return <Svg html={folderSVG(it.ref.ngo ? 'pink' : it.ref.kind === 'emp' ? 'teal' : 'orange')} />;
+    case 'work': {
+      const tint: Tint = it.ref.ngo ? 'pink' : it.ref.kind === 'emp' ? 'teal' : 'orange';
+      return <Svg html={it.ref.glyph ? badgedFolderSVG(tint, it.ref.glyph, it.ref.c) : folderSVG(tint)} />;
+    }
     case 'pdf': return <Svg html={SVG.pdf} />;
     case 'file': return <Svg html={SVG.file} />;
     case 'junk': return <Svg html={JUNK_ICONS[it.ref.icon]} />;

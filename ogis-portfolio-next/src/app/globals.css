@@ -829,3 +829,9 @@ button.switch { border: 0; padding: 0; cursor: default; transition: background .
 .ios-secret { display: grid; place-items: center; width: 100%; height: 100%; }
 .ios-secret svg { width: 100%; height: auto; }
 .secret-lock { height: 100%; justify-content: center; padding-bottom: 60px; }
+
+/* Organisation emblems (Helping Hand, SomaSawa) in place of initials */
+.orgdot.has-glyph svg { width: 72%; height: 72%; }
+.ios-folder .orgdot.has-glyph svg { width: 70% !important; height: 70% !important; }
+/* Folder icons sit inside a .svgwrap span in the React version, so size them through it */
+.item .img > .svgwrap > svg:not([style]) { width: 64px; height: auto; }
